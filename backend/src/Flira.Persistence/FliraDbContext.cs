@@ -1,5 +1,6 @@
 using Flira.Application.Interfaces;
 using Flira.Domain.Entities;
+using Flira.Domain.States;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,9 @@ public class FliraDbContext : IdentityDbContext<IdentityUser>, IApplicationDbCon
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<OrganizationUser> OrganizationUsers => Set<OrganizationUser>();
+    public DbSet<TeamUser> TeamUsers => Set<TeamUser>();
+    public DbSet<ProjectTaskState> ProjectTaskStates => Set<ProjectTaskState>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -81,6 +85,9 @@ public class FliraDbContext : IdentityDbContext<IdentityUser>, IApplicationDbCon
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Status)
+                  .IsRequired()
+                  .HasMaxLength(50);
             entity.HasOne(e => e.BoardColumn)
                   .WithMany(c => c.Tasks)
                   .HasForeignKey(e => e.BoardColumnId)
@@ -126,6 +133,36 @@ public class FliraDbContext : IdentityDbContext<IdentityUser>, IApplicationDbCon
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Token).IsRequired().HasMaxLength(256);
+        });
+
+        builder.Entity<OrganizationUser>(entity =>
+        {
+            entity.HasKey(ou => new { ou.OrganizationId, ou.UserId });
+            entity.HasOne(ou => ou.Organization)
+                  .WithMany()
+                  .HasForeignKey(ou => ou.OrganizationId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<TeamUser>(entity =>
+        {
+            entity.HasKey(tu => new { tu.TeamId, tu.UserId });
+            entity.HasOne(tu => tu.Team)
+                  .WithMany()
+                  .HasForeignKey(tu => tu.TeamId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ProjectTaskState>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.AllowedTransitionsJson).IsRequired();
+            entity.HasIndex(e => new { e.ProjectId, e.Name }).IsUnique();
+            entity.HasOne(e => e.Project)
+                  .WithMany()
+                  .HasForeignKey(e => e.ProjectId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Seed default Identity Roles

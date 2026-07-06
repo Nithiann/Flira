@@ -9,12 +9,20 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
+using Microsoft.AspNetCore.Authorization;
+using Flira.Api.Security;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Application, Infrastructure & Persistence services
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddPersistence(builder.Configuration);
+
+// Add Custom Authorization Services
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
 // Add JWT authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

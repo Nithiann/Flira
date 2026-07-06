@@ -3,6 +3,7 @@ using System;
 using Flira.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Flira.Persistence.Migrations
 {
     [DbContext(typeof(FliraDbContext))]
-    partial class FliraDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260706215854_AddDynamicWorkflowStates")]
+    partial class AddDynamicWorkflowStates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

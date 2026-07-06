@@ -18,6 +18,9 @@ public interface IApplicationDbContext
     DbSet<Attachment> Attachments { get; }
     DbSet<Notification> Notifications { get; }
     DbSet<AuditLog> AuditLogs { get; }
+    DbSet<OrganizationUser> OrganizationUsers { get; }
+    DbSet<TeamUser> TeamUsers { get; }
+    DbSet<ProjectTaskState> ProjectTaskStates { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

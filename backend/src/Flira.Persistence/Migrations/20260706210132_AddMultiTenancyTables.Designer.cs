@@ -3,6 +3,7 @@ using System;
 using Flira.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Flira.Persistence.Migrations
 {
     [DbContext(typeof(FliraDbContext))]
-    partial class FliraDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260706210132_AddMultiTenancyTables")]
+    partial class AddMultiTenancyTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -287,35 +290,6 @@ namespace Flira.Persistence.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("Flira.Domain.Entities.ProjectTaskState", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AllowedTransitionsJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsInitial")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId", "Name")
-                        .IsUnique();
-
-                    b.ToTable("ProjectTaskStates");
-                });
-
             modelBuilder.Entity("Flira.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -379,10 +353,8 @@ namespace Flira.Persistence.Migrations
                     b.Property<string>("ReporterId")
                         .HasColumnType("text");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -466,21 +438,21 @@ namespace Flira.Persistence.Migrations
                         new
                         {
                             Id = "9f42de2c-4974-4b5b-a7e8-b7fb3f8b8a01",
-                            ConcurrencyStamp = "b46889fc-4af0-48b8-abc5-e362fb7a1002",
+                            ConcurrencyStamp = "5c787055-3638-488e-912a-6b74293e5424",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "9f42de2c-4974-4b5b-a7e8-b7fb3f8b8a02",
-                            ConcurrencyStamp = "212d6420-6f93-4bd0-9170-e1c6ae0adaec",
+                            ConcurrencyStamp = "944fe30d-a7e2-48c3-8c86-4d098297af2e",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
                         new
                         {
                             Id = "9f42de2c-4974-4b5b-a7e8-b7fb3f8b8a03",
-                            ConcurrencyStamp = "d946138c-d6a7-4e05-9678-1506fb832042",
+                            ConcurrencyStamp = "154bdbd7-3b58-499c-8d0a-1ead377cb8ef",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -720,17 +692,6 @@ namespace Flira.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Flira.Domain.Entities.ProjectTaskState", b =>
-                {
-                    b.HasOne("Flira.Domain.Entities.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Flira.Domain.Entities.TaskItem", b =>

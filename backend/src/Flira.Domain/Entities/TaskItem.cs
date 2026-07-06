@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Flira.Domain.Enums;
+using Flira.Domain.States;
 
 namespace Flira.Domain.Entities;
 
@@ -11,7 +12,7 @@ public class TaskItem
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public TaskPriority Priority { get; set; } = TaskPriority.Medium;
-    public TaskItemStatus Status { get; set; } = TaskItemStatus.Backlog;
+    public string Status { get; set; } = "Backlog";
     public string? AssigneeId { get; set; }
     public string? ReporterId { get; set; }
     public DateTime? DueDate { get; set; }

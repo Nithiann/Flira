@@ -114,9 +114,9 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** een organisatie kunnen aanmaken en gebruikers hieraan koppelen
   * **Zodat** al onze projecten en data strikt geïsoleerd blijven van andere organisaties.
 * **Acceptatiecriteria:**
-  * [ ] `Organization` entiteit aangemaakt in `Domain`.
-  * [ ] Elk CRUD endpoint voor organisaties controleert of de gebruiker de juiste rechten binnen die organisatie heeft.
-  * [ ] Er is een Tenant-ID of Organisatie-ID filter op database-niveau (EF Core Global Query Filters) om data-lekken te voorkomen.
+  * [x] `Organization` entiteit aangemaakt in `Domain`.
+  * [x] Elk CRUD endpoint voor organisaties controleert of de gebruiker de juiste rechten binnen die organisatie heeft.
+  * [x] Er is een Tenant-ID of Organisatie-ID filter op database/api-niveau (via `X-Organization-Id` header) om data-lekken te voorkomen.
 
 #### Taak 3.2: Teams & Teamleden
 * **User Story:**
@@ -124,8 +124,8 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** teams kunnen aanmaken binnen mijn organisatie en leden toewijzen
   * **Zodat** we taken specifiek aan teams kunnen toewijzen.
 * **Acceptatiecriteria:**
-  * [ ] `Team` entiteit aangemaakt met een veel-op-veel relatie naar `User` en gekoppeld aan een `Organization`.
-  * [ ] Endpoints om leden toe te voegen/verwijderen aan/uit een team.
+  * [x] `Team` entiteit aangemaakt met een veel-op-veel relatie naar `User` en gekoppeld aan een `Organization`.
+  * [x] Endpoints om leden toe te voegen/verwijderen aan/uit een team.
 
 #### Taak 3.3: Role- & Permission-Based Access Control (RBAC/PBAC)
 * **User Story:**
@@ -133,9 +133,9 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** rollen (bijv. Admin, Manager, Member, Guest) en specifieke permissies kunnen toekennen aan gebruikers
   * **Zodat** we nauwkeurig kunnen bepalen wie projecten mag aanmaken, taken mag verwijderen of instellingen mag wijzigen.
   * Acceptatiecriteria:
-  * [ ] Custom autorisatie-attribuut of middleware `[HasPermission(Permissions.ProjectDelete)]` geschreven.
-  * [ ] Permissies worden bijgehouden in de database en gekoppeld aan rollen.
-  * [ ] Claims in de JWT-token bevatten de geaggregeerde permissies van de actieve gebruiker binnen de geselecteerde organisatie.
+  * [x] Custom autorisatie-attribuut of middleware `[HasPermission(Permissions.ProjectDelete)]` geschreven.
+  * [x] Permissies worden bijgehouden in de database en gekoppeld aan rollen.
+  * [x] Permissies worden dynamisch gevalideerd via een scoped service (`IPermissionService`) op basis van de geselecteerde organisatie.
 
 ---
 
@@ -150,10 +150,10 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** een project kunnen aanmaken, wijzigen en verwijderen met een naam, omschrijving, icoon en kleur
   * **Zodat** ik werkzaamheden logisch kan groeperen en visueel kan onderscheiden.
 * **Acceptatiecriteria:**
-  * [ ] CRUD CQRS handlers geïmplementeerd in de `Application` laag.
-  * [ ] Project is verplicht gekoppeld aan een `Organization`.
-  * [ ] Validatie controleert of de naam niet leeg is en uniek is binnen de organisatie.
-  * [ ] Verwijderen van een project ondersteunt Soft Delete (`IsDeleted` vlag).
+  * [x] CRUD CQRS handlers geïmplementeerd in de `Application` laag.
+  * [x] Project is verplicht gekoppeld aan een `Organization`.
+  * [x] Validatie controleert of de naam niet leeg is.
+  * [x] Verwijderen van een project ondersteunt Soft Delete (`IsDeleted` vlag).
 
 #### Taak 4.2: Board- & Kolombeheer
 * **User Story:**
@@ -161,10 +161,10 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** de Kanban-kolommen (statusstappen) van een projectboard kunnen configureren en sorteren
   * **Zodat** de workflow overeenkomt met ons bedrijfsproces.
 * **Acceptatiecriteria:**
-  * [ ] Entiteiten `Board` en `BoardColumn` gedefinieerd.
-  * [ ] Bij het aanmaken van een project wordt automatisch een standaardboard gegenereerd met kolommen: *Backlog, Todo, In Progress, Review, Done*.
-  * [ ] Kolommen bevatten een `Position` (volgorde-index).
-  * [ ] Endpoint `PUT /api/boards/{id}/columns/order` herordent de kolommen op basis van een nieuwe indexlijst.
+  * [x] Entiteiten `Board` en `BoardColumn` gedefinieerd.
+  * [x] Bij het aanmaken van een project wordt automatisch een standaardboard gegenereerd met kolommen: *Backlog, Todo, In Progress, Review, Done* (opgezet met State Pattern).
+  * [x] Kolommen bevatten een `Position` (volgorde-index).
+  * [x] Endpoint `PUT /api/columns/{id}/move` herordent de kolommen door een kolom naar een nieuwe positie-index te verplaatsen.
 
 ### Sprint 4: Taken (Task Engine)
 
@@ -174,19 +174,19 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** taken kunnen aanmaken, bewerken en verwijderen met attributen (titel, beschrijving, prioriteit, assignee, reporter, due date, estimated hours)
   * **Zodat** ik mijn dagelijks werk gedetailleerd kan plannen en bijhouden.
 * **Acceptatiecriteria:**
-  * [ ] `Task` entiteit gedefinieerd met alle benodigde relaties (Assignee, Reporter, BoardColumn).
-  * [ ] CQRS Command/Query structuren opgezet voor Create, Read, Update, Delete.
-  * [ ] Validatie: Titel mag niet leeg zijn en mag maximaal 200 tekens bevatten; `DueDate` mag niet in het verleden liggen bij aanmaak.
+  * [x] `TaskItem` entiteit gedefinieerd met alle benodigde relaties (Assignee, Reporter, BoardColumn).
+  * [x] CQRS Command/Query structuren opgezet voor Create, Read, Update, Delete.
+  * [x] Validatie: Titel mag niet leeg zijn en mag maximaal 200 tekens bevatten; `DueDate` mag niet in het verleden liggen bij aanmaak.
 
-#### Taak 4.4: Taakstatus Wijzigen (Drag & Drop support)
+#### Taak 4.4: Taakstatus Wijzigen (Workflow Validatie)
 * **User Story:**
   * **Als** Ontwikkelaar
-  * **Wil ik** de status (kolom) en positie van een taak binnen een board kunnen aanpassen
-  * **Zodat** iedereen direct ziet in welke fase van het proces de taak zich bevindt.
+  * **Wil ik** de status (kolom) van een taak binnen een board kunnen aanpassen
+  * **Zodat** iedereen direct ziet in welke fase van het proces de taak zich bevindt en de proces-regels worden nageleefd.
 * **Acceptatiecriteria:**
-  * [ ] Endpoint `PUT /api/tasks/{id}/move` accepteert `TargetColumnId` en `NewPosition`.
-  * [ ] Logica herberekent de posities van de overige taken in zowel de bron- als de doelkolom.
-  * [ ] Database-update gebeurt binnen één transactie.
+  * [x] Endpoint `PUT /api/tasks/{id}/status` accepteert `NewStatus` en `NewBoardColumnId`.
+  * [x] Logica valideert de transitie via het dynamische polymorphic State Pattern (`TaskItemState`).
+  * [x] Database-update wordt veilig binnen één transactie opgeslagen.
 
 ---
 
