@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Flira.Api/Flira.Api.csproj" />
+    <Project Path="src/Flira.Application/Flira.Application.csproj" />
+    <Project Path="src/Flira.Domain/Flira.Domain.csproj" />
+    <Project Path="src/Flira.Infrastructure/Flira.Infrastructure.csproj" />
+    <Project Path="src/Flira.Persistence/Flira.Persistence.csproj" />
+    <Project Path="src/Flira.Shared/Flira.Shared.csproj" />
+  </Folder>
+</Solution>
