@@ -1,3 +1,4 @@
+using Flira.Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +25,8 @@ public static class DependencyInjection
         })
         .AddEntityFrameworkStores<FliraDbContext>()
         .AddDefaultTokenProviders();
+
+        services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<FliraDbContext>());
 
         return services;
     }

@@ -38,7 +38,7 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Zodat** de database altijd up-to-date is zonder handmatige interventie.
 * **Acceptatiecriteria:**
   * [x] Er is een robuust migratiemechanisme in `Program.cs` ingebouwd dat faalt zonder de applicatie te crashen als de database nog niet klaar is.
-  * [ ] Er is een seed helper die basisrollen (Admin, Manager, User) en systeemconfiguraties in de database zet als deze leeg is.
+  * [x] Er is een seed helper die basisrollen (Admin, Manager, User) en systeemconfiguraties in de database zet als deze leeg is.
 
 ---
 
@@ -53,10 +53,10 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** een account kunnen aanmaken met mijn e-mailadres en een wachtwoord
   * **Zodat** ik toegang krijg tot het platform.
 * **Acceptatiecriteria:**
-  * [ ] Command `RegisterUserCommand` en handler geïmplementeerd.
-  * [ ] FluentValidation dwingt af: geldig e-mailformaat, e-mailadres moet uniek zijn, en wachtwoord voldoet aan complexiteitseisen.
-  * [ ] Wachtwoord wordt veilig gehasht via ASP.NET Identity `UserManager`.
-  * [ ] Endpoint retourneert een gestandaardiseerd `Result`-object (succes of validatiefouten).
+  * [x] Command `RegisterUserCommand` en handler geïmplementeerd.
+  * [x] FluentValidation dwingt af: geldig e-mailformaat, e-mailadres moet uniek zijn, en wachtwoord voldoet aan complexiteitseisen.
+  * [x] Wachtwoord wordt veilig gehasht via ASP.NET Identity `UserManager`.
+  * [x] Endpoint retourneert een gestandaardiseerd `Result`-object (succes of validatiefouten).
 
 #### Taak 2.2: Login & JWT Uitgifte
 * **User Story:**
@@ -64,10 +64,10 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** inloggen met mijn e-mailadres en wachtwoord
   * **Zodat** ik een JWT-toegangstoken ontvang om geautoriseerde API-calls te doen.
 * **Acceptatiecriteria:**
-  * [ ] Query `LoginQuery` en handler geïmplementeerd.
-  * [ ] Valideert de credentials tegen de ASP.NET Identity database.
-  * [ ] Genereert een JWT-token met claims: User ID, Email, en Roles.
-  * [ ] Het token heeft een verlooptermijn (bijv. 15 of 60 minuten) geconfigureerd via `appsettings.json`.
+  * [x] Query `LoginQuery` en handler geïmplementeerd.
+  * [x] Valideert de credentials tegen de ASP.NET Identity database.
+  * [x] Genereert een JWT-token met claims: User ID, Email, en Roles.
+  * [x] Het token heeft een verlooptermijn (bijv. 15 of 60 minuten) geconfigureerd via `appsettings.json`.
 
 #### Taak 2.3: Refresh Tokens
 * **User Story:**
@@ -75,10 +75,10 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** mijn verlopen JWT-token vernieuwen met een refresh token
   * **Zodat** ik ingelogd kan blijven zonder opnieuw mijn wachtwoord in te voeren.
 * **Acceptatiecriteria:**
-  * [ ] Er is een tabel `RefreshToken` gekoppeld aan de `User`.
-  * [ ] Endpoint `POST /api/auth/refresh` accepteert het verlopen JWT en het actieve refresh token.
-  * [ ] Refresh token moet cryptografisch veilig gegenereerd worden en een langere verloopdatum hebben.
-  * [ ] Gebruikte of verlopen refresh tokens worden ongeldig verklaard (rotation policy).
+  * [x] Er is een tabel `RefreshToken` gekoppeld aan de `User`.
+  * [x] Endpoint `POST /api/auth/refresh` accepteert het verlopen JWT en het actieve refresh token.
+  * [x] Refresh token moet cryptografisch veilig gegenereerd worden en een langere verloopdatum hebben.
+  * [x] Gebruikte of verlopen refresh tokens worden ongeldig verklaard (rotation policy).
 
 #### Taak 2.4: Forgot Password & Wachtwoordherstel
 * **User Story:**
@@ -86,9 +86,9 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** een wachtwoordherstel-link kunnen aanvragen via e-mail
   * **Zodat** ik op een veilige manier een nieuw wachtwoord kan instellen.
 * **Acceptatiecriteria:**
-  * [ ] Endpoint `POST /api/auth/forgot-password` genereert een unieke, tijdelijke password reset token.
-  * [ ] E-mail met token wordt verzonden (stub/abstrahering in Infrastructure).
-  * [ ] Endpoint `POST /api/auth/reset-password` valideert het token en wijzigt het wachtwoord via de `UserManager`.
+  * [x] Endpoint `POST /api/auth/forgot-password` genereert een unieke, tijdelijke password reset token.
+  * [x] E-mail met token wordt verzonden (stub/abstrahering in Infrastructure).
+  * [x] Endpoint `POST /api/auth/reset-password` valideert het token en wijzigt het wachtwoord via de `UserManager`.
 
 #### Taak 2.5: E-mailverificatie
 * **User Story:**
@@ -96,9 +96,9 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** een e-mail ontvangen met een verificatielink
   * **Zodat** ik mijn e-mailadres kan bevestigen voordat ik de applicatie volledig gebruik.
 * **Acceptatiecriteria:**
-  * [ ] Na registratie wordt de status van de gebruiker op `EmailConfirmed = false` gezet.
+  * [x] Na registratie wordt de status van de gebruiker op `EmailConfirmed = false` gezet.
   * [ ] Er wordt een e-mail verificatietoken gegenereerd en verzonden.
-  * [ ] Endpoint `GET /api/auth/confirm-email` valideert het token en zet `EmailConfirmed = true`.
+  * [x] Endpoint `POST /api/auth/confirm-email` (of GET) valideert het token en zet `EmailConfirmed = true`.
   * [ ] JWT-generatie blokkeert toegang als e-mailverificatie verplicht is en nog niet is uitgevoerd.
 
 ---

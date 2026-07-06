@@ -1,4 +1,6 @@
 using System.Text;
+using Flira.Application;
+using Flira.Infrastructure;
 using Flira.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OpenApi;
@@ -9,7 +11,9 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Persistence services (EF Core DbContext, Identity, PostgreSQL)
+// Add Application, Infrastructure & Persistence services
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
 builder.Services.AddPersistence(builder.Configuration);
 
 // Add JWT authentication
