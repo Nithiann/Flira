@@ -12,10 +12,12 @@ namespace Flira.Application.Features.Tasks.Commands.CreateTask;
 public class CreateTaskItemCommandHandler : IRequestHandler<CreateTaskItemCommand, Result<Guid>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IMediator _mediator;
 
-    public CreateTaskItemCommandHandler(IApplicationDbContext context)
+    public CreateTaskItemCommandHandler(IApplicationDbContext context, IMediator mediator)
     {
         _context = context;
+        _mediator = mediator;
     }
 
     public async Task<Result<Guid>> Handle(CreateTaskItemCommand request, CancellationToken cancellationToken)
@@ -52,6 +54,16 @@ public class CreateTaskItemCommandHandler : IRequestHandler<CreateTaskItemComman
 
         _context.TaskItems.Add(task);
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (!string.IsNullOrEmpty(request.AssigneeId))
+        {
+            await _mediator.Publish(new Common.Events.TaskAssignedEvent(
+                task.Id,
+                column.BoardId,
+                task.Title,
+                request.AssigneeId,
+                request.ReporterId ?? ""), cancellationToken);
+        }
 
         return Result.Success(task.Id);
     }

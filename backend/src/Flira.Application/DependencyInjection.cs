@@ -10,7 +10,6 @@ public static class DependencyInjection
     {
         var assembly = Assembly.GetExecutingAssembly();
 
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
         services.AddValidatorsFromAssembly(assembly);
         
         // Note: AutoMapper is registered here if profiles exist, but we scan the assembly.

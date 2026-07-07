@@ -201,9 +201,9 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** dat statuswijzigingen van taken door anderen direct op mijn scherm verschijnen zonder de pagina te verversen
   * **Zodat** we altijd met actuele data werken en conflicten voorkomen.
 * **Acceptatiecriteria:**
-  * [ ] `BoardHub : Hub` opgezet in `Flira.Api`.
-  * [ ] Zodra een taak wordt verplaatst (`MoveTaskCommand`), stuurt de handler een bericht naar de SignalR-groep van dat specifieke bord.
-  * [ ] Verbindingen worden geautoriseerd via het JWT-token (SignalR query parameter handeling).
+  * [x] `BoardHub : Hub` opgezet in `Flira.Api`.
+  * [x] Zodra een taak wordt verplaatst (`MoveTaskCommand`), stuurt de handler een bericht naar de SignalR-groep van dat specifieke bord.
+  * [x] Verbindingen worden geautoriseerd via het JWT-token (SignalR query parameter handeling).
 
 #### Taak 5.2: Comments met Markdown & Mentions
 * **User Story:**
@@ -211,9 +211,9 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** reacties kunnen achterlaten op een taak en collega's kunnen noemen met `@naam`
   * **Zodat** we inhoudelijk kunnen overleggen bij de taak.
 * **Acceptatiecriteria:**
-  * [ ] `Comment` entiteit gekoppeld aan `Task` en `User`.
-  * [ ] Comments ondersteunen opslaan van ruwe Markdown tekst.
-  * [ ] Regex parser identificeert `@username` vermeldingen in de comment-tekst en triggert een notificatie-event.
+  * [x] `Comment` entiteit gekoppeld aan `Task` en `User`.
+  * [x] Comments ondersteunen opslaan van ruwe Markdown tekst.
+  * [x] Regex parser identificeert `@username` vermeldingen in de comment-tekst en triggert een notificatie-event.
 
 #### Taak 5.3: Notificatiesysteem (Event-driven)
 * **User Story:**
@@ -221,9 +221,9 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** een in-app notificatie ontvangen wanneer ik word toegewezen aan een taak of genoemd in een comment
   * **Zodat** ik direct op de hoogte ben van acties die mijn aandacht vereisen.
 * **Acceptatiecriteria:**
-  * [ ] Notificaties worden ontkoppeld verwerkt via MediatR Domain Events of een in-memory event-bus.
-  * [ ] `Notification` entiteit opgeslagen in de database met vlag `IsRead`.
-  * [ ] Actieve gebruikers ontvangen de notificatie real-time via een SignalR `NotificationHub`.
+  * [x] Notificaties worden ontkoppeld verwerkt via MediatR Domain Events of een in-memory event-bus.
+  * [x] `Notification` entiteit opgeslagen in de database met vlag `IsRead`.
+  * [x] Actieve gebruikers ontvangen de notificatie real-time via een SignalR `NotificationHub`.
 
 #### Taak 5.4: Bestandsuploads (Storage-abstractie)
 * **User Story:**
@@ -231,10 +231,10 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** bijlagen kunnen uploaden naar taken en comments
   * **Zodat** ik specificaties, ontwerpen en screenshots kan delen.
 * **Acceptatiecriteria:**
-  * [ ] `IStorageService` interface gedefinieerd in `Application` met methoden `UploadAsync` en `DeleteAsync`.
-  * [ ] Twee implementaties in `Infrastructure`: `LocalStorageService` (ontwikkeling) en `AzureBlobStorageService` (productie/stage).
-  * [ ] Bestandsmetadata (naam, grootte, extensie, URL) opgeslagen in tabel `Attachment`.
-  * [ ] Validatie: Blokkeer onveilige bestandstypen (zoals `.exe`, `.bat`, `.sh`) en beperk de maximale bestandsgrootte (bijv. 10MB).
+  * [x] `IStorageService` interface gedefinieerd in `Application` met methoden `UploadAsync` en `DeleteAsync`.
+  * [x] Twee implementaties in `Infrastructure`: `LocalStorageService` (ontwikkeling) en `AzureBlobStorageService` (productie/stage).
+  * [x] Bestandsmetadata (naam, grootte, extensie, URL) opgeslagen in tabel `Attachment`.
+  * [x] Validatie: Blokkeer onveilige bestandstypen (zoals `.exe`, `.bat`, `.sh`) en beperk de maximale bestandsgrootte (bijv. 10MB).
 
 ---
 
@@ -249,8 +249,8 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** prestatiegegevens kunnen opvragen (zoals burndown-data, open/gesloten taken ratio, en team velocity)
   * **Zodat** ik de voortgang en prestaties van het team kan analyseren.
 * **Acceptatiecriteria:**
-  * [ ] SQL-queries of EF Core queries zijn read-optimized (met `.AsNoTracking()`).
-  * [ ] Endpoints voor dashboard widgets leveren geaggregeerde data over specifieke tijdsperiodes.
+  * [x] SQL-queries of EF Core queries zijn read-optimized (met `.AsNoTracking()`).
+  * [x] Endpoints voor dashboard widgets leveren geaggregeerde data over specifieke tijdsperiodes.
 
 #### Taak 6.2: Globale Zoekfunctie & Filtering
 * **User Story:**
@@ -258,9 +258,9 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** globaal kunnen zoeken naar taken, projecten en labels met filters op status en prioriteit
   * **Zodat** ik snel de informatie vind die ik nodig heb.
 * **Acceptatiecriteria:**
-  * [ ] Query-endpoint accepteert optionele parameters: `SearchTerm`, `ProjectId`, `AssigneeId`, `Status`, `Priority`, `Labels`.
-  * [ ] Paginering (`PageNumber`, `PageSize`) en sortering zijn verplicht.
-  * [ ] Zoekactie maakt gebruik van database-indices op veelgebruikte zoekvelden (Titel, Beschrijving, Labels).
+  * [x] Query-endpoint accepteert optionele parameters: `SearchTerm`, `ProjectId`, `AssigneeId`, `Status`, `Priority`, `Labels`.
+  * [x] Paginering (`PageNumber`, `PageSize`) en sortering zijn verplicht.
+  * [x] Zoekactie maakt gebruik van database-indices op veelgebruikte zoekvelden (Titel, Beschrijving, Labels).
 
 #### Taak 6.3: Audit Logging
 * **User Story:**
@@ -268,8 +268,8 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** dat alle belangrijke mutaties (zoals projectverwijderingen, permissiewijzigingen en mislukte inlogpogingen) worden gelogd in een database
   * **Zodat** we achteraf kunnen auditeren wie welke actie heeft uitgevoerd.
 * **Acceptatiecriteria:**
-  * [ ] Entiteit `AuditLog` bevat: `UserId`, `Action`, `EntityName`, `EntityId`, `OldValues`, `NewValues`, en `Timestamp`.
-  * [ ] DbContext overschrijft `SaveChanges/SaveChangesAsync` om automatisch wijzigingen in geauditeerde entiteiten vast te leggen.
+  * [x] Entiteit `AuditLog` bevat: `UserId`, `Action`, `EntityName`, `EntityId`, `OldValues`, `NewValues`, en `Timestamp`.
+  * [x] DbContext overschrijft `SaveChanges/SaveChangesAsync` om automatisch wijzigingen in geauditeerde entiteiten vast te leggen.
 
 ---
 
@@ -284,9 +284,9 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** unit tests schrijven voor alle CQRS command- en queryhandlers
   * **Zodat** ik er zeker van ben dat de business logica correct functioneert en er geen regressie optreedt bij wijzigingen.
 * **Acceptatiecriteria:**
-  * [ ] xUnit testproject `Flira.Application.UnitTests` aangemaakt.
-  * [ ] Moq wordt gebruikt om repository- en storage-interfaces te mocken.
-  * [ ] Minimale testdekking op de handlers is 80%.
+  * [x] xUnit testproject `Flira.Application.UnitTests` aangemaakt.
+  * [x] Moq wordt gebruikt om repository- en storage-interfaces te mocken.
+  * [x] Minimale testdekking op de handlers is 80%.
 
 #### Taak 7.2: Integratietests met Testcontainers
 * **User Story:**
@@ -294,5 +294,5 @@ Dit document bevat de gedetailleerde back-end backlog voor Flira, opgedeeld in E
   * **Wil ik** integratietests draaien tegen een echte, tijdelijke PostgreSQL database in Docker
   * **Zodat** we database-beperkingen, migraties en complexe SQL-queries betrouwbaar kunnen testen.
 * **Acceptatiecriteria:**
-  * [ ] Testproject `Flira.Api.IntegrationTests` maakt gebruik van de `Testcontainers.PostgreSql` NuGet-package.
-  * [ ] Tests draaien migraties op de tijdelijke database, voeren API-requests uit via `HttpClient` (in-memory test host) en controleren de database-status.
+  * [x] Testproject `Flira.Api.IntegrationTests` maakt gebruik van de `Testcontainers.PostgreSql` NuGet-package.
+  * [x] Tests draaien migraties op de tijdelijke database, voeren API-requests uit via `HttpClient` (in-memory test host) en controleren de database-status.

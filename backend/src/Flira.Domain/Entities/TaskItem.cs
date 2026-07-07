@@ -17,6 +17,8 @@ public class TaskItem
     public string? ReporterId { get; set; }
     public DateTime? DueDate { get; set; }
     public decimal? EstimatedHours { get; set; }
+    public string? Labels { get; set; }
+    public DateTime? CompletedAt { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsDeleted { get; set; }
 

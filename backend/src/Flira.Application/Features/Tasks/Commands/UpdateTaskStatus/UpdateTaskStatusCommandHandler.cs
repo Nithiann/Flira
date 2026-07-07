@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Flira.Application.Common.Events;
 using Flira.Application.Interfaces;
 using Flira.Domain.States;
 using Flira.Shared;
@@ -15,10 +16,12 @@ namespace Flira.Application.Features.Tasks.Commands.UpdateTaskStatus;
 public class UpdateTaskStatusCommandHandler : IRequestHandler<UpdateTaskStatusCommand, Result>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IMediator _mediator;
 
-    public UpdateTaskStatusCommandHandler(IApplicationDbContext context)
+    public UpdateTaskStatusCommandHandler(IApplicationDbContext context, IMediator mediator)
     {
         _context = context;
+        _mediator = mediator;
     }
 
     public async Task<Result> Handle(UpdateTaskStatusCommand request, CancellationToken cancellationToken)
@@ -78,8 +81,23 @@ public class UpdateTaskStatusCommandHandler : IRequestHandler<UpdateTaskStatusCo
 
         task.Status = request.NewStatus;
         task.BoardColumnId = request.NewBoardColumnId;
+        
+        if (request.NewStatus.Equals("Done", StringComparison.OrdinalIgnoreCase))
+        {
+            task.CompletedAt = DateTime.UtcNow;
+        }
+        else
+        {
+            task.CompletedAt = null;
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _mediator.Publish(new TaskStatusUpdatedEvent(
+            task.Id,
+            task.BoardColumn.BoardId,
+            request.NewStatus,
+            request.NewBoardColumnId), cancellationToken);
 
         return Result.Success();
     }

@@ -1,12 +1,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Flira.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Flira.Application.Interfaces;
 
 public interface IApplicationDbContext
 {
+    DbSet<IdentityUser> Users { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<Organization> Organizations { get; }
     DbSet<Team> Teams { get; }

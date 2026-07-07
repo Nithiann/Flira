@@ -357,6 +357,9 @@ namespace Flira.Persistence.Migrations
                     b.Property<Guid>("BoardColumnId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -372,6 +375,9 @@ namespace Flira.Persistence.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Labels")
+                        .HasColumnType("text");
 
                     b.Property<int>("Priority")
                         .HasColumnType("integer");
@@ -392,6 +398,12 @@ namespace Flira.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BoardColumnId");
+
+                    b.HasIndex("Description");
+
+                    b.HasIndex("Labels");
+
+                    b.HasIndex("Title");
 
                     b.ToTable("TaskItems");
                 });
@@ -466,21 +478,21 @@ namespace Flira.Persistence.Migrations
                         new
                         {
                             Id = "9f42de2c-4974-4b5b-a7e8-b7fb3f8b8a01",
-                            ConcurrencyStamp = "b46889fc-4af0-48b8-abc5-e362fb7a1002",
+                            ConcurrencyStamp = "59b1407b-f463-48e2-aea4-07d6a1ac0dc7",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "9f42de2c-4974-4b5b-a7e8-b7fb3f8b8a02",
-                            ConcurrencyStamp = "212d6420-6f93-4bd0-9170-e1c6ae0adaec",
+                            ConcurrencyStamp = "d05ea911-1694-41ba-a4bb-c7881823172e",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
                         new
                         {
                             Id = "9f42de2c-4974-4b5b-a7e8-b7fb3f8b8a03",
-                            ConcurrencyStamp = "d946138c-d6a7-4e05-9678-1506fb832042",
+                            ConcurrencyStamp = "add1cb63-d6d6-466b-b3cc-f87ad8d21a0e",
                             Name = "User",
                             NormalizedName = "USER"
                         });

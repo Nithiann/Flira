@@ -11,13 +11,21 @@ using Scalar.AspNetCore;
 
 using Microsoft.AspNetCore.Authorization;
 using Flira.Api.Security;
+using Flira.Api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Application, Infrastructure & Persistence services
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddSignalR();
+
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Flira.Application.DependencyInjection).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
 
 // Add Custom Authorization Services
 builder.Services.AddHttpContextAccessor();
@@ -46,6 +54,21 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"] ?? "FliraClient",
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ClockSkew = TimeSpan.Zero
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && 
+                (path.StartsWithSegments("/hubs/board") || path.StartsWithSegments("/hubs/notifications")))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -105,10 +128,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<BoardHub>("/hubs/board");
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 // Simple health endpoint
 app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Version = "1.0.0" }));
@@ -128,3 +155,5 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+public partial class Program { }
