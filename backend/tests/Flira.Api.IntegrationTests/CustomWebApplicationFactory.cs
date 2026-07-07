@@ -36,7 +36,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
             // Add transient database pointing to Testcontainer
             services.AddDbContext<FliraDbContext>(options =>
             {
-                options.UseNpgsql(_dbContainer.GetConnectionString());
+                options.UseNpgsql(_dbContainer.GetConnectionString())
+                       .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
             });
 
             // Replace ICurrentUserService with Mock to control active user context in tests

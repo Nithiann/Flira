@@ -23,6 +23,13 @@ public class FliraDbContext : IdentityDbContext<IdentityUser>, IApplicationDbCon
         _currentUserService = currentUserService;
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.ConfigureWarnings(warnings => 
+            warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+    }
+
     public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<Project> Projects => Set<Project>();
@@ -184,9 +191,9 @@ public class FliraDbContext : IdentityDbContext<IdentityUser>, IApplicationDbCon
         var userRoleId = "9f42de2c-4974-4b5b-a7e8-b7fb3f8b8a03";
 
         builder.Entity<IdentityRole>().HasData(
-            new IdentityRole { Id = adminRoleId, Name = "Admin", NormalizedName = "ADMIN" },
-            new IdentityRole { Id = managerRoleId, Name = "Manager", NormalizedName = "MANAGER" },
-            new IdentityRole { Id = userRoleId, Name = "User", NormalizedName = "USER" }
+            new IdentityRole { Id = adminRoleId, Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "9f42de2c-4974-4b5b-a7e8-b7fb3f8b8a04" },
+            new IdentityRole { Id = managerRoleId, Name = "Manager", NormalizedName = "MANAGER", ConcurrencyStamp = "9f42de2c-4974-4b5b-a7e8-b7fb3f8b8a05" },
+            new IdentityRole { Id = userRoleId, Name = "User", NormalizedName = "USER", ConcurrencyStamp = "9f42de2c-4974-4b5b-a7e8-b7fb3f8b8a06" }
         );
     }
 
