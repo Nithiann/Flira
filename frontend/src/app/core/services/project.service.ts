@@ -10,10 +10,10 @@ export class ProjectService {
   private readonly API_URL = 'http://localhost:8080/api';
 
   getProjects(orgId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.API_URL}/organization/${orgId}/projects`);
+    return this.http.get<any[]>(`${this.API_URL}/projects?organizationId=${orgId}`);
   }
 
   createProject(orgId: string, projectData: { name: string; description?: string; color?: string; icon?: string }): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/organization/${orgId}/projects`, projectData);
+    return this.http.post<any>(`${this.API_URL}/projects`, { organizationId: orgId, ...projectData });
   }
 }

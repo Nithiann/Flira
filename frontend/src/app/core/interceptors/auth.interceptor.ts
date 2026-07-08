@@ -6,13 +6,21 @@ import { catchError, switchMap, throwError } from 'rxjs';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getToken();
+  const activeOrgId = localStorage.getItem('flira-active-org-id');
 
   let authReq = req;
+  const headers: { [name: string]: string } = {};
+
   if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  if (activeOrgId) {
+    headers['X-Organization-Id'] = activeOrgId;
+  }
+
+  if (Object.keys(headers).length > 0) {
     authReq = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
+      setHeaders: headers
     });
   }
 
@@ -23,10 +31,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return authService.refreshToken().pipe(
           switchMap((res) => {
             const newToken = res.token;
+            const retryHeaders: { [name: string]: string } = {
+              Authorization: `Bearer ${newToken}`
+            };
+            if (activeOrgId) {
+              retryHeaders['X-Organization-Id'] = activeOrgId;
+            }
             const newAuthReq = req.clone({
-              setHeaders: {
-                Authorization: `Bearer ${newToken}`
-              }
+              setHeaders: retryHeaders
             });
             return next(newAuthReq);
           }),

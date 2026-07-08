@@ -42,20 +42,27 @@
       }
 
       <!-- Organization Switcher Dropdown -->
-      @if (orgService.activeOrganization()) {
-        <button mat-button [matMenuTriggerFor]="orgMenu" class="org-switcher">
-          <i class="bi bi-building"></i>
-          <span style="margin: 0 0.5rem; font-weight: 500;">{{ orgService.activeOrganization()?.name }}</span>
-          <i style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem;" class="bi bi-chevron-down"></i>
+      <button mat-button [matMenuTriggerFor]="orgMenu" class="org-switcher">
+        <i class="bi bi-building"></i>
+        <span style="margin: 0 0.5rem; font-weight: 500;">
+          {{ orgService.activeOrganization() ? orgService.activeOrganization()?.name : 'Selecteer organisatie' }}
+        </span>
+        <i style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem;" class="bi bi-chevron-down"></i>
+      </button>
+      <mat-menu #orgMenu="matMenu">
+        @for (org of orgService.organizations(); track org.id) {
+          <button mat-menu-item (click)="orgService.setActiveOrganization(org)">
+            <span>{{ org.name }}</span>
+          </button>
+        }
+        @if (orgService.organizations().length > 0) {
+          <mat-divider></mat-divider>
+        }
+        <button mat-menu-item (click)="openCreateOrganizationDialog()">
+          <i class="bi bi-plus" style="margin-right: 0.5rem; font-size: 1.15rem; vertical-align: middle;"></i>
+          <span style="vertical-align: middle;">Nieuwe organisatie</span>
         </button>
-        <mat-menu #orgMenu="matMenu">
-          @for (org of orgService.organizations(); track org.id) {
-            <button mat-menu-item (click)="orgService.setActiveOrganization(org)">
-              <span>{{ org.name }}</span>
-            </button>
-          }
-        </mat-menu>
-      }
+      </mat-menu>
 
       <span class="toolbar-spacer"></span>
 

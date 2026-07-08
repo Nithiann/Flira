@@ -11,6 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CreateOrganizationDialogComponent } from '../../../features/organizations/create-organization-dialog/create-organization-dialog';
 
 @Component({
   selector: 'app-main-layout',
@@ -26,7 +28,8 @@ import { CommonModule } from '@angular/common';
     MatButtonModule,
     MatIconModule,
     MatListModule,
-    MatMenuModule
+    MatMenuModule,
+    MatDialogModule
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
@@ -36,6 +39,7 @@ export class MainLayoutComponent {
   protected readonly themeService = inject(ThemeService);
   protected readonly translate = inject(TranslateService);
   protected readonly orgService = inject(OrganizationService);
+  private readonly dialog = inject(MatDialog);
 
   readonly isMobile = signal<boolean>(false);
   readonly currentLanguage = signal<string>('nl');
@@ -51,6 +55,18 @@ export class MainLayoutComponent {
   setLanguage(lang: string): void {
     this.translate.use(lang);
     this.currentLanguage.set(lang);
+  }
+
+  openCreateOrganizationDialog(): void {
+    const dialogRef = this.dialog.open(CreateOrganizationDialogComponent, {
+      width: '450px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.orgService.createOrganization(result).subscribe();
+      }
+    });
   }
 
   logout(): void {

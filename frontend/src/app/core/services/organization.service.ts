@@ -7,7 +7,7 @@ import { Observable, tap } from 'rxjs';
 })
 export class OrganizationService {
   private readonly http = inject(HttpClient);
-  private readonly API_URL = 'http://localhost:8080/api/organization';
+  private readonly API_URL = 'http://localhost:8080/api/organizations';
   private readonly ACTIVE_ORG_KEY = 'flira-active-org-id';
 
   readonly organizations = signal<any[]>([]);
