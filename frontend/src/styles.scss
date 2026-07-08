@@ -1,1 +1,111 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// Define standard Material 3 themes
+$light-theme: mat.define-theme();
+
+$dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark
+  )
+));
+
+// Apply themes and custom CSS variables for premium styling
+html {
+  @include mat.all-component-themes($light-theme);
+
+  --bg-color: #f8fafc;
+  --text-color: #0f172a;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --accent-color: #3b82f6;
+  --text-muted: #64748b;
+  --navbar-bg: #ffffff;
+  
+  // Transition between light and dark themes
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark-theme {
+  @include mat.all-component-colors($dark-theme);
+
+  --bg-color: #0f172a;
+  --text-color: #f8fafc;
+  --card-bg: #1e293b;
+  --border-color: #334155;
+  --accent-color: #60a5fa;
+  --text-muted: #94a3b8;
+  --navbar-bg: #1e293b;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+// Global scrollbar styling
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+html.dark-theme ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+// Glassmorphism design utility classes
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+html.dark-theme .glass-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+// Smooth transitions on interactable elements
+.interactive-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  }
+}
+
+// Bootstrap Icons integration with Angular Material (native i/span tags)
+i.bi, span.bi {
+  width: 24px;
+  height: 24px;
+  font-size: 1.15rem; /* Matches Material icon visual size */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+// Adjustments for list items and inputs
+[matPrefix]i, [matSuffix]i,
+[matListItemIcon]i, [matListItemIcon]span {
+  color: var(--text-muted);
+}

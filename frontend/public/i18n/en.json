@@ -1,0 +1,49 @@
+{
+  "COMMON": {
+    "APP_NAME": "Flira",
+    "LOGOUT": "Log Out",
+    "PROFILE": "Profile",
+    "SETTINGS": "Settings",
+    "SUBMIT": "Submit",
+    "CANCEL": "Cancel",
+    "LOADING": "Loading...",
+    "THEME_LIGHT": "Light Mode",
+    "THEME_DARK": "Dark Mode",
+    "LANG_NL": "Nederlands",
+    "LANG_EN": "English",
+    "EMAIL": "Email Address",
+    "PASSWORD": "Password"
+  },
+  "AUTH": {
+    "LOGIN_TITLE": "Sign In to Flira",
+    "LOGIN_SUBTITLE": "Enter your credentials to access your workspaces",
+    "LOGIN_BTN": "Sign In",
+    "NO_ACCOUNT": "Don't have an account?",
+    "REGISTER_LINK": "Create one here",
+    "REGISTER_TITLE": "Create your Account",
+    "REGISTER_SUBTITLE": "Join Flira to collaborate with your team",
+    "REGISTER_BTN": "Sign Up",
+    "ALREADY_ACCOUNT": "Already have an account?",
+    "LOGIN_LINK": "Sign in here",
+    "FORGOT_PASSWORD": "Forgot Password?",
+    "FORGOT_TITLE": "Reset Password",
+    "FORGOT_SUBTITLE": "Enter your email to receive a password reset link",
+    "SEND_RESET_LINK": "Send Reset Link",
+    "BACK_TO_LOGIN": "Back to Sign In",
+    "RESET_TITLE": "Enter New Password",
+    "RESET_SUBTITLE": "Set your new account password",
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "RESET_BTN": "Update Password",
+    "VERIFY_EMAIL_SENT": "Verification Email Sent",
+    "VERIFY_EMAIL_TEXT": "Please check your inbox and verify your email address to activate your account."
+  },
+  "VALIDATION": {
+    "REQUIRED": "This field is required",
+    "EMAIL_INVALID": "Please enter a valid email address",
+    "PASSWORD_MIN": "Password must be at least 6 characters long",
+    "PASSWORDS_DONT_MATCH": "Passwords do not match",
+    "PASSWORD_STRENGTH_WEAK": "Weak",
+    "PASSWORD_STRENGTH_MEDIUM": "Medium",
+    "PASSWORD_STRENGTH_STRONG": "Strong"
+  }
+}

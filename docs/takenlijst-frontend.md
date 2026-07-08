@@ -19,17 +19,16 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
 **Doel:** Het opzetten van de basis UI, het themasysteem (dark mode) en de routing structuur.
 
 ### Sprint 1: Setup & Main Layout
-
 #### Taak 1.1: Angular Material & Dark/Light Mode Theme
 * **User Story:**
   * **Als** Gebruiker
   * **Wil ik** kunnen wisselen tussen een donker en licht thema
   * **Zodat** ik comfortabel kan werken in verschillende lichtomstandigheden.
 * **Acceptatiecriteria:**
-  * [ ] Angular Material theming is geconfigureerd met SCSS-variabelen voor licht en donker thema.
-  * [ ] Een global `ThemeService` beheert de actieve theme-klasse op het `<body>` element.
-  * [ ] Systeem onthoudt de theme-keuze in `localStorage`.
-  * [ ] De transitie tussen licht en donker verloopt vloeiend (CSS transition).
+  * [x] Angular Material theming is geconfigureerd met SCSS-variabelen voor licht en donker thema.
+  * [x] Een global `ThemeService` beheert de actieve theme-klasse op het `<body>` element.
+  * [x] Systeem onthoudt de theme-keuze in `localStorage`.
+  * [x] De transitie tussen licht en donker verloopt vloeiend (CSS transition).
 
 #### Taak 1.2: Internationalisatie (ngx-translate)
 * **User Story:**
@@ -37,10 +36,10 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** de taal van de interface kunnen wijzigen (bijv. NL/EN)
   * **Zodat** ik de applicatie in mijn voorkeurstaal kan gebruiken.
 * **Acceptatiecriteria:**
-  * [ ] `ngx-translate` is geïntegreerd in `app.config.ts`.
-  * [ ] Vertaalbestanden `nl.json` en `en.json` zijn aangemaakt onder `assets/i18n/` of `public/i18n/`.
-  * [ ] Een global taalschakelaar is toegevoegd in de hoofdnavigatie.
-  * [ ] Geen enkele hardcoded tekst in HTML-bestanden; alles gebruikt de `translate` pipe.
+  * [x] `ngx-translate` is geïntegreerd in `app.config.ts`.
+  * [x] Vertaalbestanden `nl.json` en `en.json` zijn aangemaakt onder `assets/i18n/` of `public/i18n/`.
+  * [x] Een global taalschakelaar is toegevoegd in de hoofdnavigatie.
+  * [x] Geen enkele hardcoded tekst in HTML-bestanden; alles gebruikt de `translate` pipe.
 
 #### Taak 1.3: Hoofdnavigatie & Layout Componenten
 * **User Story:**
@@ -48,9 +47,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** een overzichtelijke zijbalk (Sidebar) en bovenbalk (Navbar) zien
   * **Zodat** ik snel kan navigeren tussen projecten, dashboards en instellingen.
 * **Acceptatiecriteria:**
-  * [ ] `MainLayoutComponent` is gemaakt met een responsive Material `MatSidenav`.
-  * [ ] Zijbalk klapt in op mobiele schermen en toont een hamburger-menu.
-  * [ ] Navbar bevat het logo, organisatie-switcher, notificatie-bel en profielmenu.
+  * [x] `MainLayoutComponent` is gemaakt met een responsive Material `MatSidenav`.
+  * [x] Zijbalk klapt in op mobiele schermen en toont een hamburger-menu.
+  * [x] Navbar bevat het logo, organisatie-switcher, notificatie-bel en profielmenu.
 
 ---
 
@@ -65,10 +64,10 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** een inlogscherm zien waar ik mijn e-mail en wachtwoord kan invoeren
   * **Zodat** ik veilig toegang krijg tot mijn werkomgeving.
 * **Acceptatiecriteria:**
-  * [ ] `LoginComponent` is ontworpen met Angular Reactive Forms.
-  * [ ] Validaties: E-mail is verplicht en moet geldig zijn; wachtwoord is verplicht.
-  * [ ] Toont duidelijke foutmeldingen als de API een 401 of 400 retourneert.
-  * [ ] Bij succesvolle login wordt het ontvangen JWT en refresh token opgeslagen.
+  * [x] `LoginComponent` is ontworpen met Angular Reactive Forms.
+  * [x] Validaties: E-mail is verplicht en moet geldig zijn; wachtwoord is verplicht.
+  * [x] Toont duidelijke foutmeldingen als de API een 401 of 400 retourneert.
+  * [x] Bij succesvolle login wordt het ontvangen JWT en refresh token opgeslagen.
 
 #### Taak 2.2: JWT Interceptor & Route Guards
 * **User Story:**
@@ -76,9 +75,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** automatisch mijn JWT-token meesturen met elke API-call en niet-ingelogde gebruikers weghouden bij interne pagina's
   * **Zodat** de API-aanroepen geautoriseerd zijn en we gegevens beschermen.
 * **Acceptatiecriteria:**
-  * [ ] `AuthInterceptor` voegt de `Authorization: Bearer <token>` header toe aan uitgaande HTTP-requests.
-  * [ ] `AuthGuard` blokkeert routes als er geen geldig token aanwezig is en stuurt door naar `/login`.
-  * [ ] Interceptor vangt 401-fouten op en probeert automatisch via de `AuthService` het token te vernieuwen met het refresh token. Als dit faalt, volgt een redirect naar `/login`.
+  * [x] `AuthInterceptor` voegt de `Authorization: Bearer <token>` header toe aan uitgaande HTTP-requests.
+  * [x] `AuthGuard` blokkeert routes als er geen geldig token aanwezig is en stuurt door naar `/login`.
+  * [x] Interceptor vangt 401-fouten op en probeert automatisch via de `AuthService` het token te vernieuwen met het refresh token. Als dit faalt, volgt een redirect naar `/login`.
 
 #### Taak 2.3: Registratie Pagina
 * **User Story:**
@@ -86,9 +85,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** een registratieformulier kunnen invullen
   * **Zodat** ik direct een account kan registreren.
 * **Acceptatiecriteria:**
-  * [ ] `RegisterComponent` bevat velden: Naam, E-mail, Wachtwoord en Wachtwoord Bevestigen.
-  * [ ] Wachtwoord-sterkte-indicator toont visueel of het wachtwoord complex genoeg is.
-  * [ ] Bij succesvolle registratie wordt een vriendelijk scherm getoond waarin wordt gevraagd de e-mail te verifiëren.
+  * [x] `RegisterComponent` bevat velden: Naam, E-mail, Wachtwoord en Wachtwoord Bevestigen.
+  * [x] Wachtwoord-sterkte-indicator toont visueel of het wachtwoord complex genoeg is.
+  * [x] Bij succesvolle registratie wordt een vriendelijk scherm getoond waarin wordt gevraagd de e-mail te verifiëren.
 
 #### Taak 2.4: Wachtwoord Vergeten & Herstellen
 * **User Story:**
@@ -96,8 +95,8 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** een e-mailherstelformulier kunnen invullen
   * **Zodat** ik mijn wachtwoord kan resetten.
 * **Acceptatiecriteria:**
-  * [ ] `ForgotPasswordComponent` vraagt om e-mailadres en stuurt dit naar de API.
-  * [ ] `ResetPasswordComponent` (gekoppeld aan route `/reset-password?token=...`) valideert het invoeren van een nieuw wachtwoord en stuurt dit samen met het token naar de API.
+  * [x] `ForgotPasswordComponent` vraagt om e-mailadres en stuurt dit naar de API.
+  * [x] `ResetPasswordComponent` (gekoppeld aan route `/reset-password?token=...`) valideert het invoeren van een nieuw wachtwoord en stuurt dit samen met het token naar de API.API.
 
 ---
 
@@ -112,9 +111,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** een dropdown in de header zien waarmee ik direct van organisatie kan wisselen
   * **Zodat** ik snel tussen mijn verschillende werkomgevingen kan schakelen.
 * **Acceptatiecriteria:**
-  * [ ]Dropdown toont de lijst van organisaties waar de gebruiker lid van is.
-  * [ ] Het selecteren van een andere organisatie ververst de actieve state van de applicatie en herlaadt de bijbehorende projecten.
-  * [ ] De geselecteerde organisatie wordt opgeslagen in `localStorage`.
+  * [x] Dropdown toont de lijst van organisaties waar de gebruiker lid van is.
+  * [x] Het selecteren van een andere organisatie ververst de actieve state van de applicatie en herlaadt de bijbehorende projecten.
+  * [x] De geselecteerde organisatie wordt opgeslagen in `localStorage`.
 
 #### Taak 3.2: Teambeheer Panel
 * **User Story:**
@@ -122,9 +121,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** een overzicht zien van teams en teamleden en nieuwe leden kunnen uitnodigen via e-mail
   * **Zodat** ik de samenstelling van onze teams kan beheren.
 * **Acceptatiecriteria:**
-  * [ ] `TeamManagementComponent` toont een lijst van teams binnen de organisatie.
-  * [ ] Per team kan een detailweergave geopend worden met alle leden.
-  * [ ] Formulier om een nieuwe gebruiker uit te nodigen op basis van e-mailadres en rol (RBAC dropdown).
+  * [x] `TeamManagementComponent` toont een lijst van teams binnen de organisatie.
+  * [x] Per team kan een detailweergave geopend worden met alle leden.
+  * [x] Formulier om een nieuwe gebruiker uit te nodigen op basis van e-mailadres en rol (RBAC dropdown).
 
 ---
 
@@ -139,9 +138,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** een dashboard zien met al mijn actieve projecten en een knop om een nieuw project te starten
   * **Zodat** ik direct overzicht heb en nieuwe projecten kan initialiseren.
 * **Acceptatiecriteria:**
-  * [ ] `ProjectListComponent` toont projecten als visuele kaarten (met de gekozen projectkleur en icoon).
-  * [ ] `CreateProjectDialog` (Material Dialog) bevat formulier voor Naam, Omschrijving, Kleurpicker en Icoonkiezer.
-  * [ ] Na aanmaken navigeert de app direct naar het board van het nieuwe project.
+  * [x] `ProjectListComponent` toont projecten als visuele kaarten (met de gekozen projectkleur en icoon).
+  * [x] `CreateProjectDialog` (Material Dialog) bevat formulier voor Naam, Omschrijving, Kleurpicker en Icoonkiezer.
+  * [x] Na aanmaken navigeert de app direct naar het board van het nieuwe project.
 
 #### Taak 4.2: Kanban Board met Drag & Drop (Angular CDK)
 * **User Story:**
@@ -149,9 +148,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** taken visueel kunnen verplaatsen tussen kolommen met drag-and-drop
   * **Zodat** ik mijn werkstatus snel kan bijwerken.
 * **Acceptatiecriteria:**
-  * [ ] `BoardComponent` gebruikt `cdkDropList` en `cdkDrag` uit de Angular CDK.
-  * [ ] Kolommen tonen het aantal taken dat zich erin bevindt.
-  * [ ] Slepen triggert een API-call (`MoveTaskCommand` body). Bij een API-fout wordt de taak visueel teruggezet naar zijn oorspronkelijke positie (optimistic UI rendering met rollback).
+  * [x] `BoardComponent` gebruikt `cdkDropList` en `cdkDrag` uit de Angular CDK.
+  * [x] Kolommen tonen het aantal taken dat zich erin bevindt.
+  * [x] Slepen triggert een API-call (`MoveTaskCommand` body). Bij een API-fout wordt de taak visueel teruggezet naar zijn oorspronkelijke positie (optimistic UI rendering met rollback).
 
 ---
 

@@ -1,0 +1,102 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidenav -->
+  <mat-sidenav #drawer class="sidenav"
+      [attr.role]="isMobile() ? 'dialog' : 'navigation'"
+      [mode]="isMobile() ? 'over' : 'side'"
+      [opened]="!isMobile()">
+    <div class="sidenav-brand">
+      <span class="logo">Flira</span>
+    </div>
+    
+    <mat-nav-list>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+        <i matListItemIcon class="bi bi-grid"></i>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+      <a mat-list-item routerLink="/projects" routerLinkActive="active-link">
+        <i matListItemIcon class="bi bi-clipboard-data"></i>
+        <span matListItemTitle>Projects</span>
+      </a>
+      <a mat-list-item routerLink="/teams" routerLinkActive="active-link">
+        <i matListItemIcon class="bi bi-people"></i>
+        <span matListItemTitle>Teambeheer</span>
+      </a>
+      <a mat-list-item routerLink="/settings" routerLinkActive="active-link">
+        <i matListItemIcon class="bi bi-gear"></i>
+        <span matListItemTitle>{{ 'COMMON.SETTINGS' | translate }}</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Navbar and Content Area -->
+  <mat-sidenav-content class="sidenav-content">
+    <mat-toolbar class="navbar glass-card">
+      @if (isMobile()) {
+        <button
+          type="button"
+          aria-label="Toggle sidenav"
+          mat-icon-button
+          (click)="drawer.toggle()">
+          <i aria-label="Side nav toggle icon" class="bi bi-list"></i>
+        </button>
+      }
+
+      <!-- Organization Switcher Dropdown -->
+      @if (orgService.activeOrganization()) {
+        <button mat-button [matMenuTriggerFor]="orgMenu" class="org-switcher">
+          <i class="bi bi-building"></i>
+          <span style="margin: 0 0.5rem; font-weight: 500;">{{ orgService.activeOrganization()?.name }}</span>
+          <i style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem;" class="bi bi-chevron-down"></i>
+        </button>
+        <mat-menu #orgMenu="matMenu">
+          @for (org of orgService.organizations(); track org.id) {
+            <button mat-menu-item (click)="orgService.setActiveOrganization(org)">
+              <span>{{ org.name }}</span>
+            </button>
+          }
+        </mat-menu>
+      }
+
+      <span class="toolbar-spacer"></span>
+
+      <!-- Theme Switcher -->
+      <button mat-icon-button (click)="themeService.toggleTheme()" [title]="themeService.isDarkMode() ? ('COMMON.THEME_LIGHT' | translate) : ('COMMON.THEME_DARK' | translate)">
+        <i [class]="themeService.isDarkMode() ? 'bi bi-sun' : 'bi bi-moon'"></i>
+      </button>
+
+      <!-- Language Selector -->
+      <button mat-icon-button [matMenuTriggerFor]="langMenu" [title]="'COMMON.LANG_NL' | translate">
+        <i class="bi bi-translate"></i>
+      </button>
+      <mat-menu #langMenu="matMenu">
+        <button mat-menu-item (click)="setLanguage('nl')" [disabled]="currentLanguage() === 'nl'">
+          <span>{{ 'COMMON.LANG_NL' | translate }}</span>
+        </button>
+        <button mat-menu-item (click)="setLanguage('en')" [disabled]="currentLanguage() === 'en'">
+          <span>{{ 'COMMON.LANG_EN' | translate }}</span>
+        </button>
+      </mat-menu>
+
+      <!-- Profile Menu -->
+      <button mat-icon-button [matMenuTriggerFor]="profileMenu">
+        <i class="bi bi-person-circle"></i>
+      </button>
+      <mat-menu #profileMenu="matMenu">
+        <button mat-menu-item routerLink="/settings">
+          <i class="bi bi-person"></i>
+          <span>{{ 'COMMON.PROFILE' | translate }}</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>{{ 'COMMON.LOGOUT' | translate }}</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <!-- Main Workspace Container -->
+    <main class="main-workspace">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

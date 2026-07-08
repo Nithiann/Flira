@@ -1,0 +1,38 @@
+<div class="projects-container">
+  <div class="projects-header">
+    <div>
+      <h1 class="page-title">Projecten</h1>
+      <p class="page-subtitle">Beheer al uw actieve projecten en Kanban-borden binnen deze organisatie.</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="openCreateProjectDialog()" [disabled]="!orgService.activeOrganization()">
+      <i class="bi bi-plus"></i>
+      Project starten
+    </button>
+  </div>
+
+  <div class="projects-grid">
+    @for (project of projects(); track project.id) {
+      <div class="project-card glass-card interactive-hover" (click)="goToBoard(project.id)">
+        <div class="project-card-header" [style.borderLeftColor]="project.color || '#3b82f6'">
+          <div class="icon-wrapper" [style.backgroundColor]="(project.color || '#3b82f6') + '15'" [style.color]="project.color || '#3b82f6'">
+            <i [class]="getIconClass(project.icon)"></i>
+          </div>
+          <h3>{{ project.name }}</h3>
+        </div>
+        <p class="project-description">{{ project.description || 'Geen omschrijving beschikbaar.' }}</p>
+        <div class="project-card-footer">
+          <span class="board-link">
+            Bekijk bord
+            <i class="bi bi-arrow-right"></i>
+          </span>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-projects-state glass-card">
+        <i class="huge-icon bi bi-folder2-open"></i>
+        <h2>Geen actieve projecten</h2>
+        <p>Er zijn nog geen projecten aangemaakt in deze organisatie. Klik op 'Project starten' om er direct een te maken.</p>
+      </div>
+    }
+  </div>
+</div>

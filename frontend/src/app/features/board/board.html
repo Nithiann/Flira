@@ -1,0 +1,63 @@
+<div class="board-container">
+  <div class="board-header">
+    <div class="header-left">
+      <a routerLink="/projects" class="back-link">
+        <i class="bi bi-arrow-left"></i>
+        Projecten
+      </a>
+      <h1 class="project-title">{{ projectName() || 'Laden...' }}</h1>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage()" class="error-alert">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ errorMessage() }}</span>
+  </div>
+
+  <!-- Kanban Board workspace -->
+  <div class="kanban-workspace" cdkDropListGroup>
+    @for (col of columns(); track col.id) {
+      <div class="kanban-column glass-card">
+        <div class="column-header">
+          <h3>{{ col.name }}</h3>
+          <span class="task-count">{{ col.tasks.length }}</span>
+        </div>
+
+        <!-- Task List container -->
+        <div 
+          [id]="'col-' + col.id"
+          cdkDropList
+          [cdkDropListData]="col.tasks"
+          [cdkDropListConnectedTo]="connectedTo()"
+          (cdkDropListDropped)="onDrop($event)"
+          class="task-list">
+          
+          @for (task of col.tasks; track task.id) {
+            <div cdkDrag class="task-card glass-card interactive-hover">
+              <div class="task-card-header">
+                <span class="task-key">FLI-{{ task.id.substring(0, 4).toUpperCase() }}</span>
+                <span class="priority-indicator" [style.backgroundColor]="getPriorityColor(task.priority)"></span>
+              </div>
+              <h4 class="task-title">{{ task.title }}</h4>
+              <p class="task-desc" *ngIf="task.description">{{ task.description }}</p>
+              
+              <div class="task-card-footer">
+                <!-- Assignee indicator -->
+                <div class="assignee-avatar" 
+                  [matTooltip]="task.assigneeName || 'Geen assignee'"
+                  [style.backgroundColor]="task.assigneeName ? '#3b82f6' : '#cbd5e1'">
+                  {{ (task.assigneeName ? task.assigneeName.substring(0, 2) : '??') | uppercase }}
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-column-state">
+              <p>Geen taken</p>
+            </div>
+          }
+
+        </div>
+      </div>
+    }
+  </div>
+</div>

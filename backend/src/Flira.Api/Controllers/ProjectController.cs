@@ -5,6 +5,7 @@ using Flira.Application.Features.Projects.Commands.CreateProject;
 using Flira.Application.Features.Projects.Commands.DeleteProject;
 using Flira.Application.Features.Projects.Commands.UpdateProject;
 using Flira.Application.Features.Projects.Queries.GetProject;
+using Flira.Application.Features.Projects.Queries.GetProjects;
 using Flira.Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +23,21 @@ public class ProjectController : ControllerBase
     public ProjectController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet]
+    [HasPermission(Permissions.ProjectRead)]
+    public async Task<IActionResult> List([FromQuery] Guid organizationId)
+    {
+        var query = new GetProjectsQuery(organizationId);
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new { ErrorCode = result.Error.Code, Message = result.Error.Message });
+        }
+
+        return Ok(result.Value);
     }
 
     [HttpPost]

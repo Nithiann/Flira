@@ -8,6 +8,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using Flira.Application.Features.Teams.Queries.GetTeams;
+using Flira.Application.Features.Teams.Queries.GetTeamMembers;
+
 namespace Flira.Api.Controllers;
 
 [ApiController]
@@ -20,6 +23,36 @@ public class TeamController : ControllerBase
     public TeamController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("{id}/members")]
+    [HasPermission(Permissions.TeamManage)]
+    public async Task<IActionResult> GetMembers(Guid id)
+    {
+        var query = new GetTeamMembersQuery(id);
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new { ErrorCode = result.Error.Code, Message = result.Error.Message });
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet]
+    [HasPermission(Permissions.TeamManage)]
+    public async Task<IActionResult> List([FromQuery] Guid organizationId)
+    {
+        var query = new GetTeamsQuery(organizationId);
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new { ErrorCode = result.Error.Code, Message = result.Error.Message });
+        }
+
+        return Ok(result.Value);
     }
 
     [HttpPost]
