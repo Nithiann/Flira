@@ -1,18 +1,18 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { BoardService } from '../../core/services/board.service';
-import { CdkDragDrop, moveItemInArray, transferArrayItem, DragDropModule } from '@angular/cdk/drag-drop';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { BoardStore } from '../../state/board.store';
+import { SignalRService } from '../../core/services/signalr.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { TaskDetailDialogComponent } from './task-detail-dialog/task-detail-dialog';
+import { CreateTaskDialogComponent } from './create-task-dialog/create-task-dialog';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-interface ColumnWithTasks {
-  id: string;
-  name: string;
-  position: number;
-  tasks: any[];
-}
+import { MatMenuModule } from '@angular/material/menu';
+import { TaskService } from '../../core/services/task.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-board',
@@ -23,128 +23,156 @@ interface ColumnWithTasks {
     RouterLink,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule,
+    MatMenuModule
   ],
   templateUrl: './board.html',
   styleUrl: './board.scss'
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
-  private readonly boardService = inject(BoardService);
+  private readonly router = inject(Router);
+  protected readonly boardStore = inject(BoardStore);
+  private readonly signalRService = inject(SignalRService);
+  private readonly dialog = inject(MatDialog);
+  private readonly taskService = inject(TaskService);
 
   projectId: string = '';
-  projectName = signal<string>('');
-  columns = signal<ColumnWithTasks[]>([]);
-  isLoading = signal<boolean>(false);
-  errorMessage = signal<string | null>(null);
+  private signalRSub?: Subscription;
+  private queryParamSub?: Subscription;
 
   // Compute connected list IDs for CDK drag-and-drop
-  readonly connectedTo = computed(() => this.columns().map(c => `col-${c.id}`));
+  get connectedTo(): string[] {
+    return this.boardStore.columns().map(c => `col-${c.id}`);
+  }
 
   ngOnInit(): void {
     this.projectId = this.route.snapshot.paramMap.get('projectId') || '';
     if (this.projectId) {
-      this.loadBoardData();
+      this.boardStore.loadBoard(this.projectId);
+      
+      // Connect to SignalR board hub
+      this.signalRService.connectToBoard(this.projectId);
+      
+      // Listen to real-time status updates from other users
+      this.signalRSub = this.signalRService.taskStatusUpdates$.subscribe((update) => {
+        this.boardStore.receiveTaskStatusUpdate(update.taskId, update.newStatus, update.newBoardColumnId);
+      });
     }
-  }
 
-  loadBoardData(): void {
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
-
-    // Fetch board metadata
-    this.boardService.getProjectBoard(this.projectId).subscribe({
-      next: (projectData) => {
-        this.projectName.set(projectData.name);
-        
-        // Find default board columns
-        const board = projectData.boards?.[0];
-        if (!board || !board.columns) {
-          this.columns.set([]);
-          this.isLoading.set(false);
-          return;
-        }
-
-        const cols: ColumnWithTasks[] = board.columns.map((c: any) => ({
-          id: c.id,
-          name: c.name,
-          position: c.position,
-          tasks: []
-        }));
-
-        // Fetch tasks
-        this.boardService.getProjectTasks(this.projectId).subscribe({
-          next: (taskData) => {
-            const taskItems = taskData.items || [];
-            
-            // Map tasks to columns based on boardColumnId
-            cols.forEach(col => {
-              col.tasks = taskItems.filter((t: any) => t.boardColumnId === col.id);
-            });
-
-            this.columns.set(cols.sort((a, b) => a.position - b.position));
-            this.isLoading.set(false);
-          },
-          error: () => {
-            this.isLoading.set(false);
-            this.errorMessage.set('Fout bij het laden van taken.');
-          }
-        });
-      },
-      error: () => {
-        this.isLoading.set(false);
-        this.errorMessage.set('Fout bij het laden van bord.');
+    // Monitor query params to trigger task dialog (deep links & notifications)
+    this.queryParamSub = this.route.queryParams.subscribe(params => {
+      const taskId = params['taskId'];
+      if (taskId) {
+        this.openTaskDetails(taskId, false);
       }
     });
   }
 
+  ngOnDestroy(): void {
+    if (this.projectId) {
+      this.signalRService.disconnectFromBoard(this.projectId);
+    }
+    this.signalRSub?.unsubscribe();
+    this.queryParamSub?.unsubscribe();
+  }
+
   onDrop(event: CdkDragDrop<any[]>): void {
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      // Reordering in same list (local only)
+      const data = event.container.data;
+      const prevIdx = event.previousIndex;
+      const currIdx = event.currentIndex;
+      const item = data[prevIdx];
+      data.splice(prevIdx, 1);
+      data.splice(currIdx, 0, item);
     } else {
-      // Optimistic update rollback backups
-      const previousData = [...event.previousContainer.data];
-      const currentData = [...event.container.data];
-
       const task = event.previousContainer.data[event.previousIndex];
-      // container ID format: "col-{columnId}"
       const newColumnId = event.container.id.replace('col-', '');
-      const targetColumn = this.columns().find(c => c.id === newColumnId);
+      const targetColumn = this.boardStore.columns().find(c => c.id === newColumnId);
       
       if (!targetColumn) return;
       const newStatus = targetColumn.name; // Set status equal to column name
 
-      // Visually transfer item immediately
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
+      // Use optimistic update in store
+      this.boardStore.updateTaskStatusOptimistic(task.id, newStatus, newColumnId);
+    }
+  }
 
-      // Call API
-      this.boardService.updateTaskStatus(task.id, newStatus, newColumnId).subscribe({
-        next: () => {
-          task.status = newStatus;
-          task.boardColumnId = newColumnId;
-        },
-        error: (err) => {
-          // API failed: Rollback immediate UI changes
-          event.previousContainer.data.splice(0, event.previousContainer.data.length, ...previousData);
-          event.container.data.splice(0, event.container.data.length, ...currentData);
-          
-          this.errorMessage.set(err.error?.Message || 'Fout bij het verplaatsen van taak.');
-          setTimeout(() => this.errorMessage.set(null), 5000);
-        }
+  openTaskDetails(taskId: string, updateUrl = true): void {
+    if (updateUrl) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { taskId },
+        queryParamsHandling: 'merge'
       });
     }
+
+    // Prevent opening multiple dialogs for same task
+    const isAlreadyOpen = this.dialog.openDialogs.some(
+      d => d.componentInstance instanceof TaskDetailDialogComponent && d.componentInstance.taskId === taskId
+    );
+    if (isAlreadyOpen) return;
+
+    const dialogRef = this.dialog.open(TaskDetailDialogComponent, {
+      width: '950px',
+      maxWidth: '95vw',
+      data: { taskId }
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { taskId: null },
+        queryParamsHandling: 'merge'
+      });
+    });
+  }
+
+  openCreateTaskDialog(columnId: string): void {
+    this.dialog.open(CreateTaskDialogComponent, {
+      width: '550px',
+      data: { boardColumnId: columnId }
+    });
   }
 
   getPriorityColor(priority: number): string {
     switch (priority) {
+      case 3: return '#dc2626'; // Critical
       case 2: return '#ef4444'; // High
       case 1: return '#f97316'; // Medium
       default: return '#3b82f6'; // Low
     }
   }
+
+  getPriorityLabel(priority: number): string {
+    switch (priority) {
+      case 3: return 'Critical';
+      case 2: return 'Hoog';
+      case 1: return 'Medium';
+      default: return 'Laag';
+    }
+  }
+
+  getPriorityClass(priority: number): string {
+    switch (priority) {
+      case 3: return 'priority-critical';
+      case 2: return 'priority-high';
+      case 1: return 'priority-medium';
+      default: return 'priority-low';
+    }
+  }
+
+  deleteTaskDirect(taskId: string): void {
+    if (confirm('Weet je zeker dat je deze taak wilt verwijderen?')) {
+      this.taskService.deleteTask(taskId).subscribe({
+        next: () => {
+          this.boardStore.loadBoard(this.boardStore.projectId());
+        },
+        error: () => alert('Fout bij het verwijderen van de taak.')
+      });
+    }
+  }
 }
+

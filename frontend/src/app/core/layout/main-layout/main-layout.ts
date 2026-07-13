@@ -1,9 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
 import { OrganizationService } from '../../services/organization.service';
+import { NotificationService } from '../../services/notification.service';
+import { AuthService } from '../../services/auth.service';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,10 +41,14 @@ export class MainLayoutComponent {
   protected readonly themeService = inject(ThemeService);
   protected readonly translate = inject(TranslateService);
   protected readonly orgService = inject(OrganizationService);
+  protected readonly notifService = inject(NotificationService);
+  protected readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
   readonly isMobile = signal<boolean>(false);
   readonly currentLanguage = signal<string>('nl');
+  readonly isMenuOpen = signal<boolean>(false);
 
   constructor() {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
@@ -69,11 +75,30 @@ export class MainLayoutComponent {
     });
   }
 
+  markAsRead(event: Event, notif: any): void {
+    event.stopPropagation();
+    this.notifService.markAsRead(notif.id).subscribe();
+  }
+
+  markAllAsRead(): void {
+    this.notifService.markAllAsRead().subscribe();
+  }
+
+  handleNotificationClick(notif: any): void {
+    this.notifService.markAsRead(notif.id).subscribe({
+      next: () => {
+        this.router.navigateByUrl(notif.link);
+      }
+    });
+  }
+
   logout(): void {
-    // Will be wired to AuthService later
-    console.log('Logging out...');
-    localStorage.removeItem('flira-token');
-    localStorage.removeItem('flira-refresh-token');
-    window.location.href = '/login';
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  getAvatarInitials(name: string): string {
+    if (!name) return '??';
+    return name.substring(0, 2).toUpperCase();
   }
 }

@@ -4,5 +4,5 @@ namespace Flira.Application.Interfaces;
 
 public interface IJwtTokenGenerator
 {
-    string GenerateToken(string userId, string email, IList<string> roles);
+    string GenerateToken(string userId, string email, string fullName, IList<string> roles);
 }

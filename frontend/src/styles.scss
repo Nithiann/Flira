@@ -32,13 +32,13 @@ html {
 html.dark-theme {
   @include mat.all-component-colors($dark-theme);
 
-  --bg-color: #0f172a;
+  --bg-color: #000000;
   --text-color: #f8fafc;
-  --card-bg: #1e293b;
-  --border-color: #334155;
-  --accent-color: #60a5fa;
-  --text-muted: #94a3b8;
-  --navbar-bg: #1e293b;
+  --card-bg: #09090b;
+  --border-color: #18181b;
+  --accent-color: #3b82f6;
+  --text-muted: #8e8e93;
+  --navbar-bg: #000000;
 }
 
 body {
@@ -79,7 +79,7 @@ html.dark-theme ::-webkit-scrollbar-thumb {
 }
 
 html.dark-theme .glass-card {
-  background: rgba(30, 41, 59, 0.7);
+  background: rgba(9, 9, 11, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -108,4 +108,81 @@ i.bi, span.bi {
 [matPrefix]i, [matSuffix]i,
 [matListItemIcon]i, [matListItemIcon]span {
   color: var(--text-muted);
+}
+
+// Global Accent Color Overrides
+.mdc-button--unelevated.mat-mdc-button-base.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled),
+.mdc-button--raised.mat-mdc-button-base.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled),
+.mat-mdc-flat-button.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled) {
+  --mdc-filled-button-container-color: var(--accent-color) !important;
+  --mdc-protected-button-container-color: var(--accent-color) !important;
+  background-color: var(--accent-color) !important;
+  color: #ffffff !important;
+  
+  html.dark-theme & {
+    color: #000000 !important;
+    // Except for White accent which behaves differently
+    &[style*="--accent-color: #ffffff"] {
+      color: #000000 !important;
+    }
+  }
+}
+
+.mdc-button--unelevated.mat-mdc-button-base.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled),
+.mdc-button--raised.mat-mdc-button-base.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled),
+.mat-mdc-flat-button.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled) {
+  --mdc-filled-button-container-color: var(--accent-color) !important;
+  --mdc-protected-button-container-color: var(--accent-color) !important;
+  background-color: var(--accent-color) !important;
+  color: #ffffff !important;
+  
+  html.dark-theme & {
+    color: #000000 !important;
+  }
+}
+
+.mdc-button--unelevated.mat-mdc-button-base.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover,
+.mdc-button--raised.mat-mdc-button-base.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover,
+.mat-mdc-flat-button.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover,
+.mdc-button--unelevated.mat-mdc-button-base.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover,
+.mdc-button--raised.mat-mdc-button-base.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover,
+.mat-mdc-flat-button.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover {
+  filter: brightness(1.08);
+}
+
+.mat-mdc-outlined-button.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled) {
+  --mdc-outlined-button-label-text-color: var(--accent-color) !important;
+  --mdc-outlined-button-outline-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
+}
+
+.mat-mdc-outlined-button.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover {
+  background-color: color-mix(in srgb, var(--accent-color) 8%, transparent) !important;
+}
+
+.mat-primary .mat-pseudo-checkbox-checked {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
+  color: var(--accent-color) !important;
+}
+
+// Input focus color overrides
+.mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
+  color: var(--accent-color) !important;
+}
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-focus-indicator {
+  background-color: var(--accent-color) !important;
+}
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--accent-color) !important;
+  border-width: 2px !important;
+}
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: var(--accent-color) !important;
 }

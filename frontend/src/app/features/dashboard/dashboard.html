@@ -1,0 +1,91 @@
+<div class="dashboard-container" *ngIf="projects().length > 0; else emptyStateTpl">
+  
+  <!-- Dashboard Header and Project Switcher -->
+  <div class="dashboard-header">
+    <div class="header-left">
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">Volg de voortgang en prestaties van uw team in real-time.</p>
+    </div>
+    
+    <div class="header-right">
+      <div class="project-selector-wrapper">
+        <label for="projectSelector"><i class="bi bi-folder2-open"></i> Project:</label>
+        <select 
+          id="projectSelector" 
+          #projSelect 
+          (change)="onProjectSelected(projSelect.value)" 
+          class="project-dropdown">
+          @for (p of projects(); track p.id) {
+            <option [value]="p.id" [selected]="selectedProjectId() === p.id">{{ p.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage()" class="error-alert">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ errorMessage() }}</span>
+  </div>
+
+  <!-- KPI Grid Cards -->
+  <div class="kpi-grid" *ngIf="stats()">
+    <!-- Card 1: Open Tasks -->
+    <div class="kpi-card glass-card orange-glow">
+      <div class="kpi-icon orange-icon">
+        <i class="bi bi-list-task"></i>
+      </div>
+      <div class="kpi-details">
+        <span class="kpi-label">Open Taken</span>
+        <h2 class="kpi-value">{{ stats()?.openTasksCount }}</h2>
+      </div>
+    </div>
+
+    <!-- Card 2: Closed Tasks -->
+    <div class="kpi-card glass-card green-glow">
+      <div class="kpi-icon green-icon">
+        <i class="bi bi-check2-all"></i>
+      </div>
+      <div class="kpi-details">
+        <span class="kpi-label">Gesloten Taken</span>
+        <h2 class="kpi-value">{{ stats()?.closedTasksCount }}</h2>
+      </div>
+    </div>
+
+    <!-- Card 3: Velocity -->
+    <div class="kpi-card glass-card blue-glow">
+      <div class="kpi-icon blue-icon">
+        <i class="bi bi-speedometer2"></i>
+      </div>
+      <div class="kpi-details">
+        <span class="kpi-label">Velocity (30d)</span>
+        <h2 class="kpi-value">{{ stats()?.totalCompletedHours }} <span class="unit">uren</span></h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Visualizations Panel -->
+  <div class="charts-panel glass-card">
+    <div class="chart-header">
+      <h3>Project Burndown (30 dagen)</h3>
+      <p class="chart-desc">Ideale burndown (streefsnelheid) versus de werkelijke resterende open taken.</p>
+    </div>
+    
+    <div class="chart-body">
+      <div class="canvas-wrapper">
+        <canvas #burndownCanvas></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Empty Dashboard State -->
+<ng-template #emptyStateTpl>
+  <div class="empty-dashboard-state glass-card">
+    <i class="bi bi-bar-chart-line-fill empty-icon"></i>
+    <h2>Geen actieve projecten gevonden</h2>
+    <p>Er zijn nog geen projecten aangemaakt binnen deze organisatie. Maak eerst een project aan in het projectoverzicht om voortgangsstatistieken te zien.</p>
+    <a href="/projects" class="create-project-btn-link">Naar Projecten</a>
+  </div>
+</ng-template>

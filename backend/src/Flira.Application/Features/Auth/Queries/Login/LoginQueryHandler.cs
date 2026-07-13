@@ -39,7 +39,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, Result<AuthResponse
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenGenerator.GenerateToken(user.Id, user.Email!, roles);
+        var token = _jwtTokenGenerator.GenerateToken(user.Id, user.Email!, user.UserName ?? user.Email!, roles);
 
         // Generate and save Refresh Token
         var refreshToken = new Domain.Entities.RefreshToken

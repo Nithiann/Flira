@@ -32,16 +32,17 @@ public class GetCommentsQueryHandler : IRequestHandler<GetCommentsQuery, Result<
                 _context.Users,
                 comment => comment.UserId,
                 user => user.Id,
-                (comment, user) => new CommentDto(
-                    comment.Id,
-                    comment.TaskItemId,
-                    comment.UserId,
-                    user.UserName ?? "Onbekende gebruiker",
-                    comment.Content,
-                    comment.CreatedAt
-                )
+                (comment, user) => new { comment, user }
             )
-            .OrderBy(c => c.CreatedAt)
+            .OrderBy(x => x.comment.CreatedAt)
+            .Select(x => new CommentDto(
+                x.comment.Id,
+                x.comment.TaskItemId,
+                x.comment.UserId,
+                x.user.UserName ?? "Onbekende gebruiker",
+                x.comment.Content,
+                x.comment.CreatedAt
+            ))
             .ToListAsync(cancellationToken);
 
         return Result.Success(comments);

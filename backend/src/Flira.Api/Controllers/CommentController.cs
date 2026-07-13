@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Flira.Api.Controllers;
 
 [ApiController]
-[Route("api/tasks/{taskId}/comments")]
+[Route("api")]
 [Authorize]
 public class CommentController : ControllerBase
 {
@@ -21,8 +21,8 @@ public class CommentController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create(Guid taskId, [FromBody] CreateCommentModel model)
+    [HttpPost("tasks/{taskId}/comments")]
+    public async Task<IActionResult> Create([FromRoute] Guid taskId, [FromBody] CreateCommentModel model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
         if (string.IsNullOrEmpty(userId))
@@ -41,8 +41,8 @@ public class CommentController : ControllerBase
         return Ok(new { CommentId = result.Value });
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Get(Guid taskId)
+    [HttpGet("tasks/{taskId}/comments")]
+    public async Task<IActionResult> Get([FromRoute] Guid taskId)
     {
         var query = new GetCommentsQuery(taskId);
         var result = await _mediator.Send(query);

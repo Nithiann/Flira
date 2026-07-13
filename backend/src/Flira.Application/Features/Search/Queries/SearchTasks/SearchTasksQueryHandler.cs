@@ -94,20 +94,35 @@ public class SearchTasksQueryHandler : IRequestHandler<SearchTasksQuery, Result<
         var items = await query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .Select(t => new SearchTaskItemDto(
-                t.Id,
-                t.BoardColumnId,
-                t.Title,
-                t.Description,
-                t.Priority,
-                t.Status,
-                t.AssigneeId,
-                t.ReporterId,
-                t.Labels,
-                t.DueDate,
-                t.EstimatedHours,
-                t.CreatedAt
-            ))
+            .GroupJoin(_context.Users,
+                t => t.AssigneeId,
+                u => u.Id,
+                (t, assignees) => new { Task = t, Assignees = assignees })
+            .SelectMany(
+                x => x.Assignees.DefaultIfEmpty(),
+                (x, assignee) => new { x.Task, AssigneeName = assignee != null ? assignee.UserName : null })
+            .GroupJoin(_context.Users,
+                x => x.Task.ReporterId,
+                u => u.Id,
+                (x, reporters) => new { x.Task, x.AssigneeName, Reporters = reporters })
+            .SelectMany(
+                x => x.Reporters.DefaultIfEmpty(),
+                (x, reporter) => new SearchTaskItemDto(
+                    x.Task.Id,
+                    x.Task.BoardColumnId,
+                    x.Task.Title,
+                    x.Task.Description,
+                    x.Task.Priority,
+                    x.Task.Status,
+                    x.Task.AssigneeId,
+                    x.AssigneeName,
+                    x.Task.ReporterId,
+                    reporter != null ? reporter.UserName : null,
+                    x.Task.Labels,
+                    x.Task.DueDate,
+                    x.Task.EstimatedHours,
+                    x.Task.CreatedAt
+                ))
             .ToListAsync(cancellationToken);
 
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);

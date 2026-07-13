@@ -1,0 +1,206 @@
+<div class="settings-container">
+  
+  <div class="settings-header">
+    <h1 class="page-title">Instellingen</h1>
+    <p class="page-subtitle">Beheer uw projectvoorkeuren, vormgeving en Kanban-bord kolommen.</p>
+  </div>
+
+  <mat-accordion [multi]="false" class="settings-accordion">
+    
+    <!-- Accordion 1: Kanban Board Workflows -->
+    <mat-expansion-panel [expanded]="true" class="settings-panel glass-card">
+      <mat-expansion-panel-header class="panel-header">
+        <mat-panel-title class="panel-title">
+          <i class="bi bi-gear-wide-connected panel-icon"></i>
+          <span>Kanban Board Workflow Statussen</span>
+        </mat-panel-title>
+        <mat-panel-description class="panel-description">
+          Kolommen en statussen beheren
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="panel-body-content">
+        <p class="section-desc">Pas de workflowkolommen van uw Kanban-bord aan. Voeg statussen toe, hernoem ze, verander de volgorde of verwijder ze.</p>
+        
+        <!-- Project Selector Dropdown -->
+        <div class="project-picker">
+          <label for="settingsProjectSelect"><i class="bi bi-folder2-open"></i> Project selecteren:</label>
+          <select 
+            id="settingsProjectSelect" 
+            #projSelect 
+            (change)="onProjectSelected(projSelect.value)" 
+            class="project-dropdown">
+            @for (p of projects(); track p.id) {
+              <option [value]="p.id" [selected]="selectedProjectId() === p.id">{{ p.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div *ngIf="errorMessage()" class="error-alert">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>{{ errorMessage() }}</span>
+        </div>
+
+        @if (board()) {
+          <!-- Columns Manager List -->
+          <div class="columns-manager">
+            
+            <div class="columns-list">
+              @for (col of columns(); track col.id; let idx = $index) {
+                <div class="column-item" [class.editing]="editingColumnId() === col.id">
+                  
+                  <!-- Left: Reorder Controls -->
+                  <div class="reorder-controls">
+                    <button 
+                      mat-icon-button 
+                      (click)="moveColumn(col.id, idx, 'up')" 
+                      [disabled]="idx === 0 || isSaving()"
+                      title="Verplaats omhoog">
+                      <i class="bi bi-arrow-up-short"></i>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      (click)="moveColumn(col.id, idx, 'down')" 
+                      [disabled]="idx === columns().length - 1 || isSaving()"
+                      title="Verplaats omlaag">
+                      <i class="bi bi-arrow-down-short"></i>
+                    </button>
+                  </div>
+
+                  <!-- Middle: Display or Edit Name Input -->
+                  <div class="column-content">
+                    @if (editingColumnId() === col.id) {
+                      <input 
+                        type="text" 
+                        [(ngModel)]="editingColumnName" 
+                        class="edit-column-input" 
+                        (keyup.enter)="saveEdit(col.id)"
+                        (keyup.escape)="cancelEdit()"
+                        autofocus />
+                    } @else {
+                      <span class="column-name-text">{{ col.name }}</span>
+                      <span class="position-badge">Status {{ idx + 1 }}</span>
+                    }
+                  </div>
+
+                  <!-- Right: Actions -->
+                  <div class="column-actions">
+                    @if (editingColumnId() === col.id) {
+                      <button mat-icon-button color="primary" (click)="saveEdit(col.id)" [disabled]="isSaving()" title="Opslaan">
+                        <i class="bi bi-check-lg"></i>
+                      </button>
+                      <button mat-icon-button (click)="cancelEdit()" [disabled]="isSaving()" title="Annuleren">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    } @else {
+                      <button mat-icon-button (click)="startEdit(col)" [disabled]="isSaving()" title="Hernoemen">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button mat-icon-button color="warn" (click)="deleteColumn(col.id)" [disabled]="isSaving() || columns().length <= 1" title="Verwijderen">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    }
+                  </div>
+
+                </div>
+              }
+            </div>
+
+            <!-- Add New Column Footer Input -->
+            <div class="add-column-footer">
+              <div class="add-input-wrapper">
+                <input 
+                  type="text" 
+                  [(ngModel)]="newColumnName" 
+                  placeholder="Nieuwe statusnaam (bijv. In Review)..." 
+                  class="add-column-input"
+                  (keyup.enter)="addColumn()"
+                  [disabled]="isSaving()" />
+                <button 
+                  mat-flat-button 
+                  color="primary" 
+                  (click)="addColumn()" 
+                  [disabled]="!newColumnName.trim() || isSaving()">
+                  <i class="bi bi-plus-lg"></i> Status Toevoegen
+                </button>
+              </div>
+            </div>
+
+          </div>
+        } @else {
+          <div class="empty-columns-state">
+            <i class="bi bi-gear-wide-connected empty-icon"></i>
+            <h3>Geen Kanban-bord gevonden</h3>
+            <p>Maak een project aan om workflowkolommen te beheren.</p>
+          </div>
+        }
+      </div>
+    </mat-expansion-panel>
+
+    <!-- Accordion 2: Thema & Vormgeving -->
+    <mat-expansion-panel class="settings-panel glass-card">
+      <mat-expansion-panel-header class="panel-header">
+        <mat-panel-title class="panel-title">
+          <i class="bi bi-palette-fill panel-icon"></i>
+          <span>Thema &amp; Vormgeving</span>
+        </mat-panel-title>
+        <mat-panel-description class="panel-description">
+          AMOLED thema en accentkleur instellen
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="panel-body-content">
+        <p class="section-desc">Pas het uiterlijk van Flira aan naar jouw smaak. Schakel het AMOLED donker thema in en kies een accentkleur.</p>
+
+        <div class="theme-controls">
+          <!-- Dark Mode Row -->
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-title">AMOLED Donker Thema</span>
+              <span class="setting-subtitle">Schakel over naar een diepzwart AMOLED-thema voor maximale contrasten en batterijbesparing op OLED-schermen.</span>
+            </div>
+            <button mat-flat-button [color]="isDarkMode() ? 'accent' : 'primary'" (click)="toggleTheme()" class="theme-toggle-btn">
+              <i class="bi" [class.bi-moon-fill]="isDarkMode()" [class.bi-sun-fill]="!isDarkMode()"></i>
+              {{ isDarkMode() ? 'Donker' : 'Licht' }}
+            </button>
+          </div>
+
+          <!-- Accent Color Selection -->
+          <div class="setting-row accent-picker-row">
+            <div class="setting-info">
+              <span class="setting-title">Accentkleur</span>
+              <span class="setting-subtitle">Kies een primaire accentkleur voor knoppen, badges, geselecteerde items en links in de applicatie.</span>
+            </div>
+            <div class="accent-options">
+              @for (opt of accentOptions; track opt.value) {
+                <button 
+                  type="button"
+                  class="accent-dot-btn" 
+                  [style.backgroundColor]="opt.color" 
+                  [class.active]="selectedAccent() === opt.value"
+                  (click)="selectAccent(opt.value)"
+                  [title]="opt.name">
+                  <i class="bi bi-check-lg" *ngIf="selectedAccent() === opt.value"></i>
+                </button>
+              }
+              <!-- Custom Color Picker -->
+              <div class="custom-color-picker-wrapper">
+                <input 
+                  type="color" 
+                  id="customColorInput" 
+                  [value]="selectedAccent() === 'custom' ? customAccentColor() : '#3b82f6'" 
+                  (input)="onCustomColorInput($event)"
+                  class="custom-color-input" />
+                <label for="customColorInput" class="custom-color-label" [class.active]="selectedAccent() === 'custom'">
+                  <i class="bi bi-palette-fill"></i> Custom
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+
+  </mat-accordion>
+
+</div>

@@ -44,8 +44,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/projects/projects').then(m => m.ProjectsComponent)
       },
       {
+        path: 'search',
+        loadComponent: () => import('./features/search/search').then(m => m.SearchComponent)
+      },
+      {
         path: 'projects/:projectId/board',
         loadComponent: () => import('./features/board/board').then(m => m.BoardComponent)
+      },
+      {
+        path: 'projects/boards/:boardId/tasks/:taskId',
+        loadComponent: () => import('./features/board/task-resolve.component').then(m => m.TaskResolveComponent)
       },
       {
         path: 'teams',
@@ -54,6 +62,10 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('./features/settings/settings').then(m => m.SettingsComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/profile/profile').then(m => m.ProfileComponent)
       }
     ]
   },

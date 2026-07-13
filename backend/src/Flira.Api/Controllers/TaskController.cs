@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Flira.Api.Security;
 using Flira.Application.Features.Tasks.Commands.CreateTask;
@@ -106,7 +107,13 @@ public class TaskController : ControllerBase
     [HasPermission(Permissions.TaskUpdate)]
     public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateTaskStatusModel model)
     {
-        var command = new UpdateTaskStatusCommand(id, model.NewStatus, model.NewBoardColumnId);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var command = new UpdateTaskStatusCommand(id, model.NewStatus, model.NewBoardColumnId, userId);
         var result = await _mediator.Send(command);
 
         if (result.IsFailure)

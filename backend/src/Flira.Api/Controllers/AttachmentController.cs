@@ -77,4 +77,18 @@ public class AttachmentController : ControllerBase
 
         return Ok(new { Message = "Bijlage succesvol verwijderd." });
     }
+
+    [HttpGet("tasks/{taskId}/attachments")]
+    public async Task<IActionResult> GetAttachments(Guid taskId)
+    {
+        var query = new Flira.Application.Features.Attachments.Queries.GetAttachments.GetAttachmentsQuery(taskId);
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new { ErrorCode = result.Error.Code, Message = result.Error.Message });
+        }
+
+        return Ok(result.Value);
+    }
 }

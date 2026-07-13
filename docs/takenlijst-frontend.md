@@ -165,9 +165,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** op een taakkaart kunnen klikken om een gedetailleerd dialoogvenster te openen
   * **Zodat** ik alle details, bijlagen en reacties kan bekijken en bewerken.
 * **Acceptatiecriteria:**
-  * [ ] `TaskDetailDialogComponent` opent via `MatDialog`.
-  * [ ] Bevat componenten voor inline-editing van de titel en beschrijving (klik om te bewerken, klik erbuiten of druk op Enter om op te slaan).
-  * [ ] Status, prioriteit en assignee kunnen aangepast worden via dropdowns die direct API-updates triggeren.
+  * [x] `TaskDetailDialogComponent` opent via `MatDialog`.
+  * [x] Bevat componenten voor inline-editing van de titel en beschrijving (klik om te bewerken, klik erbuiten of druk op Enter om op te slaan).
+  * [x] Status, prioriteit en assignee kunnen aangepast worden via dropdowns die direct API-updates triggeren.
 
 #### Taak 5.2: Comments Sectie met Markdown Weergave
 * **User Story:**
@@ -175,9 +175,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** reacties onderaan de taak kunnen typen en opgemaakte Markdown kunnen lezen
   * **Zodat** de discussie gestructureerd en leesbaar blijft.
 * **Acceptatiecriteria:**
-  * [ ] Comments sectie toont een tijdlijn van reacties met profielfoto's en timestamps.
-  * [ ] Gebruikt een Markdown parser component (zoals `ngx-markdown`) om de reactietekst veilig te renderen.
-  * [ ] Inputveld ondersteunt autocomplete suggesties voor teamleden wanneer de gebruiker `@` typt.
+  * [x] Comments sectie toont een tijdlijn van reacties met profielfoto's en timestamps.
+  * [x] Gebruikt een Markdown parser component (zoals `ngx-markdown`) om de reactietekst veilig te renderen.
+  * [x] Inputveld ondersteunt autocomplete suggesties voor teamleden wanneer de gebruiker `@` typt.
 
 #### Taak 5.3: Attachments Upload & Download Area
 * **User Story:**
@@ -185,9 +185,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** bestanden kunnen slepen naar de taak om ze te uploaden en ze als thumbnails kunnen zien
   * **Zodat** ik bestanden eenvoudig kan delen en bekijken.
 * **Acceptatiecriteria:**
-  * [ ] Bevat een drag-and-drop zone voor bestanden.
-  * [ ] Toont een uploadvoortgangsbalk per bestand.
-  * [ ] Toont geüploade bestanden in een lijst met specifieke iconen op basis van bestandstype en een downloadknop.
+  * [x] Bevat een drag-and-drop zone voor bestanden.
+  * [x] Toont een uploadvoortgangsbalk per bestand.
+  * [x] Toont geüploade bestanden in een lijst met specifieke iconen op basis van bestandstype en een downloadknop.
 
 ---
 
@@ -202,8 +202,8 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** dat wijzigingen die anderen op het board maken direct live worden bijgewerkt in mijn weergave
   * **Zodat** ik nooit met verouderde informatie werk.
 * **Acceptatiecriteria:**
-  * [ ] `SignalRService` beheert de verbinding met de `BoardHub`.
-  * [ ] Bij binnenkomende evenementen (bijv. `TaskMoved`, `TaskUpdated`) wordt de frontend state (NgRx Signal Store) direct bijgewerkt zonder de hele pagina opnieuw te laden.
+  * [x] `SignalRService` beheert de verbinding met de `BoardHub`.
+  * [x] Bij binnenkomende evenementen (bijv. `TaskMoved`, `TaskUpdated`) wordt de frontend state (NgRx Signal Store) direct bijgewerkt zonder de hele pagina opnieuw te laden.
 
 #### Taak 6.2: Notificatie-bel in de Header
 * **User Story:**
@@ -211,9 +211,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** een notificatie-icoon met een teller (badge) in de bovenbalk zien
   * **Zodat** ik weet hoeveel ongelezen notificaties ik heb.
 * **Acceptatiecriteria:**
-  * [ ] Het notificatie-icoon toont een rode badge met het aantal ongelezen notificaties.
-  * [ ] Klikken op het icoon opent een menu met een scrollbare lijst van recente notificaties.
-  * [ ] Klikken op een notificatie markeert deze als gelezen en navigeert direct naar de bijbehorende taak.
+  * [x] Het notificatie-icoon toont een rode badge met het aantal ongelezen notificaties.
+  * [x] Klikken op het icoon opent een menu met een scrollbare lijst van recente notificaties.
+  * [x] Klikken op een notificatie markeert deze als gelezen en navigeert direct naar de bijbehorende taak.
 
 ---
 
@@ -228,9 +228,9 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** grafieken zien van onze projectvoortgang (Burndown en Velocity)
   * **Zodat** ik direct inzicht heb in onze sprint-prestaties.
 * **Acceptatiecriteria:**
-  * [ ] `DashboardComponent` integreert `Chart.js` (bijv. via `ng2-charts`).
-  * [ ] Burndown-grafiek toont een ideale lijn versus de werkelijke voortgang.
-  * [ ] Grafieken passen zich automatisch aan bij het wisselen tussen donker en licht thema (kleuren van assen en rasters veranderen mee).
+  * [x] `DashboardComponent` integreert `Chart.js` (bijv. via `ng2-charts`).
+  * [x] Burndown-grafiek toont een ideale lijn versus de werkelijke voortgang.
+  * [x] Grafieken passen zich automatisch aan bij het wisselen tussen donker en licht thema (kleuren van assen en rasters veranderen mee).
 
 #### Taak 7.2: Geavanceerd Zoekscherm met Filters
 * **User Story:**
@@ -238,6 +238,6 @@ Dit document bevat de gedetailleerde front-end backlog voor Flira, opgedeeld in 
   * **Wil ik** op een centrale pagina kunnen zoeken naar taken over alle projecten heen met diverse filters
   * **Zodat** ik snel een specifiek ticket kan terugvinden.
 * **Acceptatiecriteria:**
-  * [ ] `SearchComponent` bevat een centraal invoerveld met instant search (debounce van 300ms voor het sturen van de API-call).
-  * [ ] Filters voor Project, Assignee, Status, Prioriteit en Due Date.
-  * [ ] Zoekresultaten worden overzichtelijk gepagineerd getoond.
+  * [x] `SearchComponent` bevat een centraal invoerveld met instant search (debounce van 300ms voor het sturen van de API-call).
+  * [x] Filters voor Project, Assignee, Status, Prioriteit en Due Date.
+  * [x] Zoekresultaten worden overzichtelijk gepagineerd getoond.

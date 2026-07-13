@@ -26,7 +26,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<st
 
         var user = new IdentityUser
         {
-            UserName = request.Email,
+            UserName = request.FullName,
             Email = request.Email
         };
 
@@ -39,6 +39,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<st
 
         // Add default Role "User"
         await _userManager.AddToRoleAsync(user, "User");
+
+        // Store FullName as a claim for JWT and queries
+        await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("full_name", request.FullName));
 
         return Result.Success(user.Id);
     }

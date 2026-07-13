@@ -18,7 +18,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         _configuration = configuration;
     }
 
-    public string GenerateToken(string userId, string email, IList<string> roles)
+    public string GenerateToken(string userId, string email, string fullName, IList<string> roles)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["Key"] ?? "SuperSecretKeyForFliraSecurityMustBeAtLeast32CharactersLong!";
@@ -28,6 +28,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         {
             new(JwtRegisteredClaimNames.Sub, userId),
             new(JwtRegisteredClaimNames.Email, email),
+            new(JwtRegisteredClaimNames.Name, fullName),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

@@ -7,4 +7,5 @@ namespace Flira.Application.Features.Tasks.Commands.UpdateTaskStatus;
 public record UpdateTaskStatusCommand(
     Guid TaskId,
     string NewStatus,
-    Guid NewBoardColumnId) : IRequest<Result>;
+    Guid NewBoardColumnId,
+    string UserId) : IRequest<Result>;

@@ -44,7 +44,7 @@ public class CreateTaskItemCommandHandler : IRequestHandler<CreateTaskItemComman
             Title = request.Title,
             Description = request.Description,
             Priority = request.Priority,
-            Status = initialStatus,
+            Status = column.Name,
             AssigneeId = request.AssigneeId,
             ReporterId = request.ReporterId,
             DueDate = request.DueDate,

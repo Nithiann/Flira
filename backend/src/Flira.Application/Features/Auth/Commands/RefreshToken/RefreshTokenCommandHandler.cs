@@ -46,7 +46,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
 
         // Generate a new JWT
         var roles = await _userManager.GetRolesAsync(user);
-        var jwtToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email!, roles);
+        var jwtToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email!, user.UserName ?? user.Email!, roles);
 
         // Generate a new Refresh Token
         var newRefreshToken = new Domain.Entities.RefreshToken

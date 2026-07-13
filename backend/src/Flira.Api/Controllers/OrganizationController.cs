@@ -79,6 +79,20 @@ public class OrganizationController : ControllerBase
 
         return Ok(new { Message = "Lid succesvol toegevoegd aan de organisatie." });
     }
+
+    [HttpGet("{id}/members")]
+    public async Task<IActionResult> GetMembers(Guid id)
+    {
+        var query = new Flira.Application.Features.Organizations.Queries.GetOrganizationMembers.GetOrganizationMembersQuery(id);
+        var result = await _mediator.Send(query);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new { ErrorCode = result.Error.Code, Message = result.Error.Message });
+        }
+
+        return Ok(result.Value);
+    }
 }
 
 public record CreateOrganizationModel(string Name, string Description);

@@ -37,6 +37,7 @@ public class UpdateTaskStatusCommandHandler : IRequestHandler<UpdateTaskStatusCo
         }
 
         var projectId = task.BoardColumn.Board.ProjectId;
+        var boardId = task.BoardColumn.BoardId;
 
         // Load project task states
         var projectStates = await _context.ProjectTaskStates
@@ -79,6 +80,7 @@ public class UpdateTaskStatusCommandHandler : IRequestHandler<UpdateTaskStatusCo
             return Result.Failure(new Error("Column.NotFound", "De doelkolom bestaat niet of hoort bij een ander bord."));
         }
 
+        var oldStatus = task.Status;
         task.Status = request.NewStatus;
         task.BoardColumnId = request.NewBoardColumnId;
         
@@ -95,9 +97,11 @@ public class UpdateTaskStatusCommandHandler : IRequestHandler<UpdateTaskStatusCo
 
         await _mediator.Publish(new TaskStatusUpdatedEvent(
             task.Id,
-            task.BoardColumn.BoardId,
+            boardId,
+            oldStatus,
             request.NewStatus,
-            request.NewBoardColumnId), cancellationToken);
+            request.NewBoardColumnId,
+            request.UserId), cancellationToken);
 
         return Result.Success();
     }

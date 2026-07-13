@@ -22,6 +22,8 @@ public static class DependencyInjection
             options.Password.RequireNonAlphanumeric = false;
             options.Password.RequireUppercase = false;
             options.Password.RequireLowercase = false;
+            options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ àáâãäåæçèéêëìíîïðñòóôõöùúûüýþÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝÞ";
+            options.User.RequireUniqueEmail = true;
         })
         .AddEntityFrameworkStores<FliraDbContext>()
         .AddDefaultTokenProviders();

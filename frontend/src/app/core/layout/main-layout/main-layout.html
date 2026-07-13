@@ -1,6 +1,7 @@
 <mat-sidenav-container class="sidenav-container">
   <!-- Sidenav -->
   <mat-sidenav #drawer class="sidenav"
+      [class.sidebar-expanded]="isMenuOpen()"
       [attr.role]="isMobile() ? 'dialog' : 'navigation'"
       [mode]="isMobile() ? 'over' : 'side'"
       [opened]="!isMobile()">
@@ -17,15 +18,44 @@
         <i matListItemIcon class="bi bi-clipboard-data"></i>
         <span matListItemTitle>Projects</span>
       </a>
+      <a mat-list-item routerLink="/search" routerLinkActive="active-link">
+        <i matListItemIcon class="bi bi-search"></i>
+        <span matListItemTitle>Zoeken</span>
+      </a>
       <a mat-list-item routerLink="/teams" routerLinkActive="active-link">
         <i matListItemIcon class="bi bi-people"></i>
         <span matListItemTitle>Teambeheer</span>
       </a>
-      <a mat-list-item routerLink="/settings" routerLinkActive="active-link">
-        <i matListItemIcon class="bi bi-gear"></i>
-        <span matListItemTitle>{{ 'COMMON.SETTINGS' | translate }}</span>
-      </a>
     </mat-nav-list>
+
+    <!-- Sidenav Footer with Profile and Settings -->
+    <div class="sidenav-footer">
+      <div class="profile-strip" [matMenuTriggerFor]="sidebarProfileMenu" title="Gebruikersopties">
+        <div class="user-avatar-sm" [style.backgroundColor]="'var(--accent-color)'">
+          {{ getAvatarInitials(authService.currentUser()?.unique_name || authService.currentUser()?.name || 'U') }}
+        </div>
+        <div class="profile-details-text">
+          <span class="profile-username">{{ authService.currentUser()?.unique_name || authService.currentUser()?.name || 'Gebruiker' }}</span>
+          <span class="profile-role">{{ authService.currentUser()?.role || 'User' }}</span>
+        </div>
+      </div>
+      
+      <a mat-icon-button class="sidebar-settings-btn" routerLink="/settings" title="Instellingen">
+        <i class="bi bi-gear"></i>
+      </a>
+
+      <mat-menu #sidebarProfileMenu="matMenu" class="sidebar-profile-menu" (opened)="isMenuOpen.set(true)" (closed)="isMenuOpen.set(false)">
+        <button mat-menu-item routerLink="/profile">
+          <i class="bi bi-person"></i>
+          <span>Mijn profiel</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>{{ 'COMMON.LOGOUT' | translate }}</span>
+        </button>
+      </mat-menu>
+    </div>
   </mat-sidenav>
 
   <!-- Navbar and Content Area -->
@@ -66,6 +96,40 @@
 
       <span class="toolbar-spacer"></span>
 
+      <!-- Notification Bell -->
+      <button mat-icon-button [matMenuTriggerFor]="notifMenu" class="notification-bell-btn" title="Notificaties">
+        <i class="bi bi-bell"></i>
+        @if (notifService.unreadCount() > 0) {
+          <span class="notification-badge">{{ notifService.unreadCount() }}</span>
+        }
+      </button>
+      <mat-menu #notifMenu="matMenu" xPosition="before" class="notification-menu">
+        <div class="notification-menu-header" (click)="$event.stopPropagation()">
+          <h4>Notificaties</h4>
+          <button mat-button class="mark-all-read-btn" *ngIf="notifService.unreadCount() > 0" (click)="markAllAsRead()">Alles gelezen</button>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="notification-items-list" (click)="$event.stopPropagation()">
+          @for (n of notifService.notifications(); track n.id) {
+            <button mat-menu-item class="notification-item" [class.unread]="!n.isRead" (click)="handleNotificationClick(n)">
+              <div class="notif-content-wrapper">
+                <div class="notif-dot" *ngIf="!n.isRead"></div>
+                <div class="notif-text">
+                  <span class="notif-title">{{ n.title }}</span>
+                  <p class="notif-desc">{{ n.content }}</p>
+                  <span class="notif-time">{{ n.createdAt | date:'short' }}</span>
+                </div>
+              </div>
+            </button>
+          } @empty {
+            <div class="empty-notif-state">
+              <i class="bi bi-bell-slash"></i>
+              <p>Geen notificaties</p>
+            </div>
+          }
+        </div>
+      </mat-menu>
+
       <!-- Theme Switcher -->
       <button mat-icon-button (click)="themeService.toggleTheme()" [title]="themeService.isDarkMode() ? ('COMMON.THEME_LIGHT' | translate) : ('COMMON.THEME_DARK' | translate)">
         <i [class]="themeService.isDarkMode() ? 'bi bi-sun' : 'bi bi-moon'"></i>
@@ -84,21 +148,6 @@
         </button>
       </mat-menu>
 
-      <!-- Profile Menu -->
-      <button mat-icon-button [matMenuTriggerFor]="profileMenu">
-        <i class="bi bi-person-circle"></i>
-      </button>
-      <mat-menu #profileMenu="matMenu">
-        <button mat-menu-item routerLink="/settings">
-          <i class="bi bi-person"></i>
-          <span>{{ 'COMMON.PROFILE' | translate }}</span>
-        </button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="logout()">
-          <i class="bi bi-box-arrow-right"></i>
-          <span>{{ 'COMMON.LOGOUT' | translate }}</span>
-        </button>
-      </mat-menu>
     </mat-toolbar>
 
     <!-- Main Workspace Container -->
