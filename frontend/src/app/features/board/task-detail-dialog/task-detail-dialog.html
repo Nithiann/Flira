@@ -1,0 +1,328 @@
+<div class="dialog-wrapper glass-card" *ngIf="!isLoading(); else loadingTpl">
+  
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <div class="header-left">
+      <span class="task-key">FLI-{{ taskId.substring(0,4).toUpperCase() }}</span>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="close-btn" title="Sluiten">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage()" class="error-alert">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ errorMessage() }}</span>
+  </div>
+
+  <div class="dialog-body">
+    <!-- Left Column (Main details, comments, attachments) -->
+    <div class="main-column">
+      
+      <!-- Task Title (Inline Edit) -->
+      <div class="title-container">
+        @if (isEditingTitle()) {
+          <form [formGroup]="taskForm" (submit)="stopTitleEdit()" style="width: 100%;">
+            <input 
+              type="text" 
+              formControlName="title" 
+              class="title-input-edit" 
+              (blur)="stopTitleEdit()" 
+              #titleInput
+              autofocus />
+          </form>
+        } @else {
+          <h1 class="task-title-display interactive-hover" (click)="startTitleEdit()">
+            {{ taskForm.get('title')?.value }}
+            <i class="bi bi-pencil edit-icon"></i>
+          </h1>
+        }
+      </div>
+
+      <!-- Task Description (Inline Edit with Markdown support) -->
+      <div class="description-section">
+        <div class="section-header">
+          <h3>Beschrijving</h3>
+          <button mat-button class="edit-link-btn" (click)="startDescEdit()" *ngIf="!isEditingDesc()">
+            <i class="bi bi-pencil"></i> Bewerken
+          </button>
+        </div>
+
+        @if (isEditingDesc()) {
+          <form [formGroup]="taskForm" class="desc-edit-form">
+            <textarea 
+              formControlName="description" 
+              class="desc-textarea-edit" 
+              placeholder="Schrijf hier een gedetailleerde beschrijving van de taak..."
+              rows="6"></textarea>
+            <div class="form-actions">
+              <button mat-flat-button color="primary" (click)="stopDescEdit()">Opslaan</button>
+              <button mat-button (click)="isEditingDesc.set(false)">Annuleren</button>
+            </div>
+          </form>
+        } @else {
+          <div 
+            class="description-display glass-card interactive-hover" 
+            (click)="startDescEdit()">
+            @if (taskForm.get('description')?.value) {
+              <div [innerHTML]="taskForm.get('description')?.value | markdown"></div>
+            } @else {
+              <p class="empty-placeholder">Geen beschrijving ingevoerd. Klik om er een toe te voegen...</p>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Attachments Area (Drag & Drop) -->
+      <div class="attachments-section">
+        <h3>Bijlagen</h3>
+        
+        <!-- Drag & Drop Zone -->
+        <div 
+          class="dropzone-area"
+          [class.dragging]="isDragging()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave()"
+          (drop)="onDrop($event)"
+          (click)="fileInput.click()">
+          
+          <input 
+            type="file" 
+            #fileInput 
+            (change)="onFileSelected($event)" 
+            style="display: none;" />
+
+          <i class="bi bi-cloud-arrow-up upload-icon"></i>
+          <p>Sleep bestanden hiernaartoe of <span class="browse-link">klik om te bladeren</span></p>
+          <span class="file-limits">Max. bestandsgrootte: 10MB. Gevaarlijke formaten (exe, bat, script) zijn geblokkeerd.</span>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="upload-progress-bar" *ngIf="uploadProgress() !== null">
+          <div class="progress-details">
+            <span class="file-name"><i class="bi bi-file-earmark"></i> {{ uploadingFileName() }}</span>
+            <span>{{ uploadProgress() }}%</span>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="uploadProgress()"></mat-progress-bar>
+        </div>
+
+        <!-- Attachment List -->
+        <div class="attachments-list" *ngIf="attachments().length > 0">
+          @for (file of attachments(); track file.id) {
+            <div class="attachment-card glass-card">
+              <div class="file-preview">
+                @if (isImage(file.fileName)) {
+                  <img [src]="getDownloadUrl(file.fileUrl)" alt="Image thumbnail" class="img-thumbnail" />
+                } @else {
+                  <div class="file-icon-box">
+                    <i [class]="'bi ' + getFileIcon(file.fileName)"></i>
+                  </div>
+                }
+              </div>
+              <div class="file-info">
+                <span class="filename" [title]="file.fileName">{{ file.fileName }}</span>
+                <span class="filesize">{{ formatBytes(file.fileSizeInBytes) }} — {{ file.createdAt | date:'short' }}</span>
+              </div>
+              <div class="file-actions">
+                <a [href]="getDownloadUrl(file.fileUrl)" target="_blank" class="action-btn download-btn" download title="Downloaden">
+                  <i class="bi bi-download"></i>
+                </a>
+                <button mat-icon-button class="action-btn delete-btn" (click)="deleteAttachment(file.id)" title="Verwijderen">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Comments Timeline Section -->
+      <div class="comments-section">
+        <h3>Discussie & Reacties</h3>
+        
+        <!-- Post Comment Form -->
+        <form [formGroup]="commentForm" (submit)="postComment()" class="comment-input-box">
+          <div class="comment-textarea-wrapper">
+            <textarea 
+              #commentInput
+              formControlName="content"
+              class="comment-textarea"
+              placeholder="Schrijf een reactie... Gebruik Markdown en typ '@' om iemand te noemen"
+              (input)="onCommentInput($event)"
+              rows="3"></textarea>
+
+            <!-- Autocomplete Mentions Box -->
+            <div class="mentions-autocomplete glass-card" *ngIf="showMentions() && getFilteredMembers().length > 0">
+              <div 
+                *ngFor="let member of getFilteredMembers()" 
+                class="mention-item" 
+                (click)="insertMention(member)">
+                <div class="mention-avatar">
+                  {{ member.username.substring(0, 2) | uppercase }}
+                </div>
+                <div class="mention-details">
+                  <span class="mention-username">{{ member.username }}</span>
+                  <span class="mention-email">{{ member.email }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="comment-actions">
+            <button 
+              mat-flat-button 
+              color="primary" 
+              type="submit" 
+              [disabled]="commentForm.invalid || isSaving()">
+              Reageer
+            </button>
+          </div>
+        </form>
+
+        <!-- Comments History -->
+        <div class="comments-timeline" *ngIf="comments().length > 0; else noCommentsTpl">
+          @for (c of comments(); track c.id) {
+            <div class="comment-wrapper">
+              <div class="comment-avatar">
+                {{ c.username.substring(0, 2) | uppercase }}
+              </div>
+              <div class="comment-bubble glass-card">
+                <div class="comment-header">
+                  <span class="author-name">{{ c.username }}</span>
+                  <span class="comment-date">{{ c.createdAt | date:'short' }}</span>
+                </div>
+                <div class="comment-content" [innerHTML]="c.content | markdown"></div>
+              </div>
+            </div>
+          }
+        </div>
+        <ng-template #noCommentsTpl>
+          <div class="empty-comments-state">
+            <i class="bi bi-chat-left-dots"></i>
+            <p>Nog geen reacties geplaatst. Start de discussie!</p>
+          </div>
+        </ng-template>
+
+      </div>
+    </div>
+
+    <!-- Right Column (Sidebar properties pane) -->
+    <div class="sidebar-column glass-card">
+      <form [formGroup]="taskForm" class="properties-form">
+        
+        <div class="prop-group">
+          <label>Status</label>
+          <div class="status-badge-container">
+            <span class="status-pill">{{ task?.status || 'Onbekend' }}</span>
+          </div>
+        </div>
+
+        <div class="prop-group">
+          <label for="priority">Prioriteit</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="priority" (selectionChange)="onFieldChange()" id="priority">
+              <mat-option [value]="0">Laag</mat-option>
+              <mat-option [value]="1">Medium</mat-option>
+              <mat-option [value]="2">Hoog</mat-option>
+              <mat-option [value]="3">Critical</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="prop-group">
+          <label for="assignee">Assignee</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="assigneeId" (selectionChange)="onFieldChange()" id="assignee" placeholder="Niet toegewezen">
+              <mat-select-trigger>
+                {{ getMemberName(taskForm.get('assigneeId')?.value) }}
+              </mat-select-trigger>
+              <mat-option [value]="null">Niet toegewezen</mat-option>
+              @for (m of members(); track m.userId) {
+                <mat-option [value]="m.userId">
+                  <div class="avatar-option">
+                    <span class="avatar-sm">{{ m.username.substring(0, 2) | uppercase }}</span>
+                    <span>{{ m.username }}</span>
+                  </div>
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="prop-group">
+          <label for="reporter">Reporter</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="reporterId" (selectionChange)="onFieldChange()" id="reporter" placeholder="Geen reporter">
+              <mat-select-trigger>
+                {{ getReporterName(taskForm.get('reporterId')?.value) }}
+              </mat-select-trigger>
+              <mat-option [value]="null">Geen reporter</mat-option>
+              @for (m of members(); track m.userId) {
+                <mat-option [value]="m.userId">
+                  <div class="avatar-option">
+                    <span class="avatar-sm">{{ m.username.substring(0, 2) | uppercase }}</span>
+                    <span>{{ m.username }}</span>
+                  </div>
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="prop-group">
+          <label for="dueDate">Vervaldatum</label>
+          <input 
+            type="date" 
+            formControlName="dueDate" 
+            (change)="onFieldChange()" 
+            class="sidebar-date-input" 
+            id="dueDate" />
+        </div>
+
+        <div class="prop-group">
+          <label for="estimatedHours">Schatting (uren)</label>
+          <input 
+            type="number" 
+            formControlName="estimatedHours" 
+            (change)="onFieldChange()" 
+            class="sidebar-number-input" 
+            id="estimatedHours" 
+            placeholder="Bijv. 8" 
+            min="0" />
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- Dates metadata -->
+        <div class="metadata-list">
+          <div class="meta-row">
+            <span class="meta-label">Aangemaakt</span>
+            <span class="meta-value">{{ task?.createdAt | date:'shortDate' }}</span>
+          </div>
+          <div class="meta-row" *ngIf="task?.completedAt">
+            <span class="meta-label">Afgerond</span>
+            <span class="meta-value">{{ task?.completedAt | date:'shortDate' }}</span>
+          </div>
+        </div>
+
+        <!-- Delete button -->
+        <button 
+          mat-stroked-button 
+          color="warn" 
+          type="button" 
+          class="delete-task-btn full-width" 
+          (click)="deleteTask()">
+          <i class="bi bi-trash"></i> Taak Verwijderen
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingTpl>
+  <div class="loading-container glass-card">
+    <i class="bi bi-arrow-repeat spin-icon"></i>
+    <p>Taakdetails laden...</p>
+  </div>
+</ng-template>

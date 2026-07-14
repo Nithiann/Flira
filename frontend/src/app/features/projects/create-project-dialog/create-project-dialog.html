@@ -1,0 +1,60 @@
+<h2 mat-dialog-title>Nieuw Project Aanmaken</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="projectForm" id="projectForm" (ngSubmit)="onSubmit()" class="dialog-form">
+    <!-- Project Name -->
+    <mat-form-field appearance="outline">
+      <mat-label>Projectnaam</mat-label>
+      <input matInput formControlName="name" placeholder="Bijv. Mobile App V2" required>
+      <mat-error *ngIf="projectForm.get('name')?.hasError('required')">
+        Projectnaam is verplicht.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline">
+      <mat-label>Omschrijving</mat-label>
+      <textarea matInput formControlName="description" placeholder="Optionele projectomschrijving"></textarea>
+    </mat-form-field>
+
+    <!-- Color Picker -->
+    <div class="picker-section">
+      <label class="picker-label">Projectkleur</label>
+      <div class="color-grid">
+        @for (color of colors; track color) {
+          <button type="button" 
+            class="color-btn" 
+            [style.backgroundColor]="color"
+            [class.selected]="selectedColor() === color"
+            (click)="selectColor(color)"
+            [attr.aria-label]="'Selecteer kleur ' + color">
+            <i *ngIf="selectedColor() === color" class="fa-solid fa-check"></i>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Icon Picker -->
+    <div class="picker-section">
+      <label class="picker-label">Projecticoon</label>
+      <div class="icon-grid">
+        @for (icon of icons; track icon) {
+          <button type="button" 
+            class="icon-btn" 
+            [class.selected]="selectedIcon() === icon"
+            (click)="selectIcon(icon)"
+            [attr.aria-label]="'Selecteer icoon ' + icon">
+            <i [class]="getIconClass(icon)"></i>
+          </button>
+        }
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Annuleren</button>
+  <button mat-flat-button color="primary" type="submit" form="projectForm" [disabled]="projectForm.invalid">
+    Project aanmaken
+  </button>
+</mat-dialog-actions>

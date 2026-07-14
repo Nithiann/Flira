@@ -1,0 +1,95 @@
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+  min-width: 400px;
+  
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.picker-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  
+  .picker-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+}
+
+.color-grid {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  
+  .color-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    padding: 0;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+    
+    &.selected {
+      border-color: var(--text-color);
+      transform: scale(1.1);
+    }
+    
+    mat-icon {
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
+
+.icon-grid {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+    padding: 0;
+    
+    &:hover {
+      background-color: rgba(59, 130, 246, 0.05);
+      border-color: var(--accent-color);
+    }
+    
+    &.selected {
+      background-color: rgba(59, 130, 246, 0.1);
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+      transform: scale(1.05);
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: 1.5rem 0 0 0 !important;
+}

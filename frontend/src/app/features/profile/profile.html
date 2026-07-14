@@ -1,0 +1,92 @@
+<div class="profile-container">
+  
+  <div class="profile-header">
+    <h1 class="page-title">Gebruikersprofiel</h1>
+    <p class="page-subtitle">Bekijk uw accountdetails, organisaties en bijdragen.</p>
+  </div>
+
+  <div *ngIf="isLoading()" class="loading-state">
+    <div class="spinner"></div>
+    <p>Profiel laden...</p>
+  </div>
+
+  <div *ngIf="errorMessage()" class="error-alert">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ errorMessage() }}</span>
+  </div>
+
+  <div *ngIf="!isLoading() && profile()" class="profile-grid">
+    
+    <!-- Left Card: User Main Details -->
+    <div class="profile-card user-main-card glass-card">
+      <div class="user-avatar-large" [style.backgroundColor]="'var(--accent-color)'">
+        {{ getAvatarInitials(profile()!.username) }}
+      </div>
+      <h2 class="profile-name">{{ profile()!.username }}</h2>
+      <p class="profile-email"><i class="bi bi-envelope"></i> {{ profile()!.email }}</p>
+      
+      <div class="role-badge-wrapper">
+        <span class="global-role-badge">Global Role: {{ profile()!.globalRole }}</span>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="profile-quick-actions">
+        <a mat-stroked-button routerLink="/settings" class="settings-btn">
+          <i class="bi bi-gear"></i> Instellingen
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Area: Organizations and Projects -->
+    <div class="details-column">
+      
+      <!-- Organizations Section -->
+      <div class="profile-card glass-card">
+        <div class="card-section-header">
+          <h3><i class="bi bi-building"></i> Mijn Organisaties</h3>
+        </div>
+        <div class="organizations-list">
+          @for (org of profile()!.organizations; track org.id) {
+            <div class="org-item">
+              <div class="org-icon">
+                <i class="bi bi-briefcase"></i>
+              </div>
+              <div class="org-info">
+                <span class="org-name">{{ org.name }}</span>
+                <span class="org-role-pill">{{ org.role }}</span>
+              </div>
+            </div>
+          } @empty {
+            <p class="empty-list-text">U bent nog geen lid van een organisatie.</p>
+          }
+        </div>
+      </div>
+
+      <!-- Projects Section -->
+      <div class="profile-card glass-card">
+        <div class="card-section-header">
+          <h3><i class="bi bi-clipboard-data"></i> Projecten</h3>
+        </div>
+        <div class="projects-grid-list">
+          @for (proj of profile()!.projects; track proj.id) {
+            <div class="project-card-item interactive-hover" [routerLink]="['/board', proj.id]">
+              <div class="project-icon-wrapper" [style.backgroundColor]="proj.color || 'var(--accent-color)'">
+                <i class="bi" [class]="proj.icon || 'bi-clipboard'"></i>
+              </div>
+              <div class="project-info">
+                <span class="project-name">{{ proj.name }}</span>
+                <span class="project-org-name">{{ proj.organizationName }}</span>
+              </div>
+            </div>
+          } @empty {
+            <p class="empty-list-text">Geen projecten gevonden.</p>
+          }
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

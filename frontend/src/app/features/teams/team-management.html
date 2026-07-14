@@ -1,0 +1,130 @@
+<div class="teams-container">
+  <!-- Sidenav-like pane for Teams list -->
+  <div class="teams-list-pane glass-card">
+    <div class="pane-header">
+      <h2>Teams</h2>
+      <button mat-icon-button (click)="showCreateTeam.set(!showCreateTeam())" [title]="'Team toevoegen'">
+        <i [class]="showCreateTeam() ? 'bi bi-x' : 'bi bi-plus'"></i>
+      </button>
+    </div>
+
+    <!-- Create Team form -->
+    @if (showCreateTeam()) {
+      <form [formGroup]="createTeamForm" (ngSubmit)="onCreateTeam()" class="create-team-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Teamnaam</mat-label>
+          <input matInput formControlName="name" placeholder="Bijv. Engineering" required>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Omschrijving</mat-label>
+          <textarea matInput formControlName="description" placeholder="Optionele beschrijving"></textarea>
+        </mat-form-field>
+        <button mat-flat-button color="primary" type="submit" [disabled]="createTeamForm.invalid">
+          Team aanmaken
+        </button>
+      </form>
+    }
+
+    <!-- Teams List -->
+    <mat-selection-list [multiple]="false" class="teams-list">
+      @for (team of teams(); track team.id) {
+        <mat-list-option (click)="selectTeam(team)" [selected]="selectedTeam()?.id === team.id">
+          <i matListItemIcon class="bi bi-people"></i>
+          <span matListItemTitle>{{ team.name }}</span>
+          <span matListItemLine>{{ team.description || 'Geen beschrijving' }}</span>
+        </mat-list-option>
+      } @empty {
+        <div class="empty-state">
+          <p>Geen teams gevonden in deze organisatie.</p>
+        </div>
+      }
+    </mat-selection-list>
+  </div>
+
+  <!-- Detail area for team members -->
+  <div class="team-details-pane glass-card">
+    @if (selectedTeam()) {
+      <div class="details-header">
+        <div>
+          <h2>{{ selectedTeam()?.name }}</h2>
+          <p class="description">{{ selectedTeam()?.description }}</p>
+        </div>
+        <button mat-flat-button color="primary" (click)="showInviteForm.set(!showInviteForm())">
+          <i class="bi bi-person-plus"></i>
+          Lid uitnodigen
+        </button>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Success / Error alerts -->
+      @if (successMessage()) {
+        <div class="alert success-alert">
+          <i class="bi bi-check-circle"></i>
+          <span>{{ successMessage() }}</span>
+        </div>
+      }
+      @if (errorMessage()) {
+        <div class="alert error-alert">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Invite Member Form -->
+      @if (showInviteForm()) {
+        <form [formGroup]="inviteForm" (ngSubmit)="onInviteMember()" class="invite-form">
+          <h3>Nieuw lid uitnodigen</h3>
+          <div class="invite-form-fields">
+            <mat-form-field appearance="outline">
+              <mat-label>Zoeken op naam of e-mailadres</mat-label>
+              <input matInput type="text" formControlName="email" placeholder="Typ om te zoeken..." [matAutocomplete]="auto" required>
+              <mat-autocomplete #auto="matAutocomplete">
+                @for (user of filteredUsers(); track user.id) {
+                  <mat-option [value]="user.email">
+                    {{ user.userName }} ({{ user.email }})
+                  </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Rol</mat-label>
+              <mat-select formControlName="role" required>
+                <mat-option value="Admin">Admin</mat-option>
+                <mat-option value="Manager">Manager</mat-option>
+                <mat-option value="User">User</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" [disabled]="inviteForm.invalid || isLoading()">
+              Uitnodigen
+            </button>
+          </div>
+        </form>
+      }
+
+      <!-- Members List -->
+      <div class="members-section">
+        <h3>Teamleden ({{ members().length }})</h3>
+        <mat-list class="members-list">
+          @for (member of members(); track member.id) {
+            <mat-list-item>
+              <i matListItemIcon class="bi bi-person"></i>
+              <span matListItemTitle>{{ member.fullName || member.userName }}</span>
+              <span matListItemLine>{{ member.email }} &bull; <strong>{{ member.role }}</strong></span>
+            </mat-list-item>
+          } @empty {
+            <div class="empty-state">
+              <p>Dit team heeft nog geen leden.</p>
+            </div>
+          }
+        </mat-list>
+      </div>
+    } @else {
+      <div class="empty-details-state">
+        <i class="huge-icon bi bi-people"></i>
+        <h2>Selecteer een team</h2>
+        <p>Kies een team uit de linkerlijst om de leden te beheren of nieuwe leden uit te nodigen.</p>
+      </div>
+    }
+  </div>
+</div>

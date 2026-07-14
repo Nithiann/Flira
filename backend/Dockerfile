@@ -12,7 +12,7 @@ COPY src/Flira.Persistence/Flira.Persistence.csproj src/Flira.Persistence/
 COPY src/Flira.Api/Flira.Api.csproj src/Flira.Api/
 
 # Restore packages
-RUN dotnet restore Flira.slnx
+RUN dotnet restore src/Flira.Api/Flira.Api.csproj
 
 # Copy source code and build
 COPY src/ src/

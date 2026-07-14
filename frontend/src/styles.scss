@@ -1,1 +1,188 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// Define standard Material 3 themes
+$light-theme: mat.define-theme();
+
+$dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark
+  )
+));
+
+// Apply themes and custom CSS variables for premium styling
+html {
+  @include mat.all-component-themes($light-theme);
+
+  --bg-color: #f8fafc;
+  --text-color: #0f172a;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --accent-color: #3b82f6;
+  --text-muted: #64748b;
+  --navbar-bg: #ffffff;
+  
+  // Transition between light and dark themes
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark-theme {
+  @include mat.all-component-colors($dark-theme);
+
+  --bg-color: #000000;
+  --text-color: #f8fafc;
+  --card-bg: #09090b;
+  --border-color: #18181b;
+  --accent-color: #3b82f6;
+  --text-muted: #8e8e93;
+  --navbar-bg: #000000;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+// Global scrollbar styling
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+html.dark-theme ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+// Glassmorphism design utility classes
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+html.dark-theme .glass-card {
+  background: rgba(9, 9, 11, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+// Smooth transitions on interactable elements
+.interactive-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  }
+}
+
+// Bootstrap Icons integration with Angular Material (native i/span tags)
+i.bi, span.bi {
+  width: 24px;
+  height: 24px;
+  font-size: 1.15rem; /* Matches Material icon visual size */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+// Adjustments for list items and inputs
+[matPrefix]i, [matSuffix]i,
+[matListItemIcon]i, [matListItemIcon]span {
+  color: var(--text-muted);
+}
+
+// Global Accent Color Overrides
+.mdc-button--unelevated.mat-mdc-button-base.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled),
+.mdc-button--raised.mat-mdc-button-base.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled),
+.mat-mdc-flat-button.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled) {
+  --mdc-filled-button-container-color: var(--accent-color) !important;
+  --mdc-protected-button-container-color: var(--accent-color) !important;
+  background-color: var(--accent-color) !important;
+  color: #ffffff !important;
+  
+  html.dark-theme & {
+    color: #000000 !important;
+    // Except for White accent which behaves differently
+    &[style*="--accent-color: #ffffff"] {
+      color: #000000 !important;
+    }
+  }
+}
+
+.mdc-button--unelevated.mat-mdc-button-base.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled),
+.mdc-button--raised.mat-mdc-button-base.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled),
+.mat-mdc-flat-button.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled) {
+  --mdc-filled-button-container-color: var(--accent-color) !important;
+  --mdc-protected-button-container-color: var(--accent-color) !important;
+  background-color: var(--accent-color) !important;
+  color: #ffffff !important;
+  
+  html.dark-theme & {
+    color: #000000 !important;
+  }
+}
+
+.mdc-button--unelevated.mat-mdc-button-base.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover,
+.mdc-button--raised.mat-mdc-button-base.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover,
+.mat-mdc-flat-button.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover,
+.mdc-button--unelevated.mat-mdc-button-base.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover,
+.mdc-button--raised.mat-mdc-button-base.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover,
+.mat-mdc-flat-button.mat-accent:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover {
+  filter: brightness(1.08);
+}
+
+.mat-mdc-outlined-button.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled) {
+  --mdc-outlined-button-label-text-color: var(--accent-color) !important;
+  --mdc-outlined-button-outline-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
+}
+
+.mat-mdc-outlined-button.mat-primary:not(:disabled):not([disabled]):not(.mat-mdc-button-disabled):hover {
+  background-color: color-mix(in srgb, var(--accent-color) 8%, transparent) !important;
+}
+
+.mat-primary .mat-pseudo-checkbox-checked {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
+  color: var(--accent-color) !important;
+}
+
+// Input focus color overrides
+.mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
+  color: var(--accent-color) !important;
+}
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-focus-indicator {
+  background-color: var(--accent-color) !important;
+}
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--accent-color) !important;
+  border-width: 2px !important;
+}
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: var(--accent-color) !important;
+}

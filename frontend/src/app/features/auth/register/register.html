@@ -1,0 +1,96 @@
+<!-- Registration Success State -->
+<div *ngIf="isRegistered()" class="success-container">
+  <div class="success-icon-wrapper">
+    <i class="success-icon bi bi-envelope-check"></i>
+  </div>
+  <h2>{{ 'AUTH.VERIFY_EMAIL_SENT' | translate }}</h2>
+  <p>{{ 'AUTH.VERIFY_EMAIL_TEXT' | translate }}</p>
+  <button mat-flat-button color="primary" routerLink="/login" class="back-login-btn">
+    {{ 'AUTH.BACK_TO_LOGIN' | translate }}
+  </button>
+</div>
+
+<!-- Active Registration Form State -->
+<div *ngIf="!isRegistered()">
+  <h2>{{ 'AUTH.REGISTER_TITLE' | translate }}</h2>
+  <p class="subtitle">{{ 'AUTH.REGISTER_SUBTITLE' | translate }}</p>
+
+  <div *ngIf="errorMessage()" class="error-alert">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ errorMessage() }}</span>
+  </div>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+    <!-- Full Name -->
+    <mat-form-field appearance="outline">
+      <mat-label>Naam</mat-label>
+      <input matInput formControlName="fullName" placeholder="John Doe" required>
+      <i matPrefix class="bi bi-person"></i>
+      <mat-error *ngIf="registerForm.get('fullName')?.hasError('required')">
+        {{ 'VALIDATION.REQUIRED' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'COMMON.EMAIL' | translate }}</mat-label>
+      <input matInput type="email" formControlName="email" placeholder="example@flira.com" required>
+      <i matPrefix class="bi bi-envelope"></i>
+      <mat-error *ngIf="registerForm.get('email')?.hasError('required')">
+        {{ 'VALIDATION.REQUIRED' | translate }}
+      </mat-error>
+      <mat-error *ngIf="registerForm.get('email')?.hasError('email')">
+        {{ 'VALIDATION.EMAIL_INVALID' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Password -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'COMMON.PASSWORD' | translate }}</mat-label>
+      <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" required>
+      <i matPrefix class="bi bi-lock"></i>
+      <button type="button" mat-icon-button matSuffix (click)="hidePassword.set(!hidePassword())" [attr.aria-label]="'Toggle password visibility'" [attr.aria-pressed]="!hidePassword()">
+        <i [class]="hidePassword() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+      </button>
+      <mat-error *ngIf="registerForm.get('password')?.hasError('required')">
+        {{ 'VALIDATION.REQUIRED' | translate }}
+      </mat-error>
+      <mat-error *ngIf="registerForm.get('password')?.hasError('minlength')">
+        {{ 'VALIDATION.PASSWORD_MIN' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Password Strength Meter -->
+    <div class="strength-meter" *ngIf="registerForm.get('password')?.value">
+      <div class="meter-bar" [ngClass]="passwordStrength()"></div>
+      <span class="meter-label">
+        {{ 'COMMON.PASSWORD' | translate }}: 
+        <strong [ngClass]="passwordStrength()">
+          {{ 'VALIDATION.PASSWORD_STRENGTH_' + passwordStrength().toUpperCase() | translate }}
+        </strong>
+      </span>
+    </div>
+
+    <!-- Confirm Password -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</mat-label>
+      <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="confirmPassword" required>
+      <i matPrefix class="bi bi-key"></i>
+      <mat-error *ngIf="registerForm.get('confirmPassword')?.hasError('required')">
+        {{ 'VALIDATION.REQUIRED' | translate }}
+      </mat-error>
+      <mat-error *ngIf="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched">
+        {{ 'VALIDATION.PASSWORDS_DONT_MATCH' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="registerForm.invalid || isLoading()" class="submit-btn">
+      <span *ngIf="!isLoading()">{{ 'AUTH.REGISTER_BTN' | translate }}</span>
+      <span *ngIf="isLoading()">{{ 'COMMON.LOADING' | translate }}</span>
+    </button>
+  </form>
+
+  <div class="auth-footer">
+    <p>{{ 'AUTH.ALREADY_ACCOUNT' | translate }} <a routerLink="/login">{{ 'AUTH.LOGIN_LINK' | translate }}</a></p>
+  </div>
+</div>

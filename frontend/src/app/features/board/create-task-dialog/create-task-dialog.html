@@ -1,0 +1,109 @@
+<div class="create-dialog-wrapper glass-card">
+  
+  <div class="dialog-header">
+    <h2>Nieuwe Taak Aanmaken</h2>
+    <button mat-icon-button (click)="dialogRef.close()" class="close-btn" title="Sluiten">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage()" class="error-alert">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ errorMessage() }}</span>
+  </div>
+
+  <form [formGroup]="taskForm" (submit)="onSubmit()" class="create-form">
+    
+    <!-- Title -->
+    <div class="form-group">
+      <label for="taskTitle">Titel *</label>
+      <input 
+        type="text" 
+        id="taskTitle" 
+        formControlName="title" 
+        placeholder="Wat moet er gebeuren?" 
+        class="form-input" 
+        autofocus />
+      <span class="error-sub" *ngIf="taskForm.get('title')?.touched && taskForm.get('title')?.hasError('required')">
+        Titel is verplicht.
+      </span>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label for="taskDesc">Beschrijving</label>
+      <textarea 
+        id="taskDesc" 
+        formControlName="description" 
+        placeholder="Geef hier details over de taak (Markdown ondersteund)..." 
+        class="form-textarea" 
+        rows="4"></textarea>
+    </div>
+
+    <!-- Form Grid: Priority & Assignee -->
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="prioritySelect">Prioriteit</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select formControlName="priority" id="prioritySelect">
+            <mat-option [value]="0">Laag</mat-option>
+            <mat-option [value]="1">Medium</mat-option>
+            <mat-option [value]="2">Hoog</mat-option>
+            <mat-option [value]="3">Critical</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group">
+        <label for="assigneeSelect">Assignee</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select formControlName="assigneeId" id="assigneeSelect" placeholder="Niet toegewezen">
+            <mat-option [value]="null">Niet toegewezen</mat-option>
+            @for (m of members(); track m.userId) {
+              <mat-option [value]="m.userId">
+                <div class="avatar-option">
+                  <span class="avatar-sm">{{ m.username.substring(0, 2) | uppercase }}</span>
+                  <span>{{ m.username }}</span>
+                </div>
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Form Grid 2: Due Date & Estimated Hours -->
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="dueDate">Vervaldatum</label>
+        <input 
+          type="date" 
+          id="dueDate" 
+          formControlName="dueDate" 
+          class="form-date-input" />
+      </div>
+
+      <div class="form-group">
+        <label for="estimatedHours">Schatting (uren)</label>
+        <input 
+          type="number" 
+          id="estimatedHours" 
+          formControlName="estimatedHours" 
+          placeholder="Bijv. 4" 
+          class="form-number-input" 
+          min="0" />
+      </div>
+    </div>
+
+    <!-- Actions Footer -->
+    <div class="form-actions-footer">
+      <button mat-button type="button" (click)="dialogRef.close()" [disabled]="isSaving()">Annuleren</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="taskForm.invalid || isSaving()">
+        <span *ngIf="!isSaving()">Aanmaken</span>
+        <span *ngIf="isSaving()"><i class="bi bi-arrow-repeat spin-icon"></i> Bezig...</span>
+      </button>
+    </div>
+
+  </form>
+
+</div>

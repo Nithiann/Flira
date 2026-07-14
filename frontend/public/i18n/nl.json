@@ -1,0 +1,49 @@
+{
+  "COMMON": {
+    "APP_NAME": "Flira",
+    "LOGOUT": "Uitloggen",
+    "PROFILE": "Profiel",
+    "SETTINGS": "Instellingen",
+    "SUBMIT": "Versturen",
+    "CANCEL": "Annuleren",
+    "LOADING": "Laden...",
+    "THEME_LIGHT": "Lichte modus",
+    "THEME_DARK": "Donkere modus",
+    "LANG_NL": "Nederlands",
+    "LANG_EN": "English",
+    "EMAIL": "E-mailadres",
+    "PASSWORD": "Wachtwoord"
+  },
+  "AUTH": {
+    "LOGIN_TITLE": "Inloggen bij Flira",
+    "LOGIN_SUBTITLE": "Voer je inloggegevens in om toegang te krijgen tot je werkruimtes",
+    "LOGIN_BTN": "Inloggen",
+    "NO_ACCOUNT": "Nog geen account?",
+    "REGISTER_LINK": "Maak hier een aan",
+    "REGISTER_TITLE": "Account aanmaken",
+    "REGISTER_SUBTITLE": "Meld je aan bij Flira om samen te werken met je team",
+    "REGISTER_BTN": "Registreren",
+    "ALREADY_ACCOUNT": "Heb je al een account?",
+    "LOGIN_LINK": "Log hier in",
+    "FORGOT_PASSWORD": "Wachtwoord vergeten?",
+    "FORGOT_TITLE": "Wachtwoord herstellen",
+    "FORGOT_SUBTITLE": "Voer je e-mailadres in om een herstellink te ontvangen",
+    "SEND_RESET_LINK": "Herstellink versturen",
+    "BACK_TO_LOGIN": "Terug naar inloggen",
+    "RESET_TITLE": "Nieuw wachtwoord instellen",
+    "RESET_SUBTITLE": "Stel je nieuwe wachtwoord in",
+    "CONFIRM_PASSWORD": "Wachtwoord bevestigen",
+    "RESET_BTN": "Wachtwoord bijwerken",
+    "VERIFY_EMAIL_SENT": "Verificatie e-mail verzonden",
+    "VERIFY_EMAIL_TEXT": "Controleer je inbox en verifieer je e-mailadres om je account te activeren."
+  },
+  "VALIDATION": {
+    "REQUIRED": "Dit veld is verplicht",
+    "EMAIL_INVALID": "Voer een geldig e-mailadres in",
+    "PASSWORD_MIN": "Wachtwoord moet minimaal 6 tekens lang zijn",
+    "PASSWORDS_DONT_MATCH": "Wachtwoorden komen niet overeen",
+    "PASSWORD_STRENGTH_WEAK": "Zwak",
+    "PASSWORD_STRENGTH_MEDIUM": "Matig",
+    "PASSWORD_STRENGTH_STRONG": "Sterk"
+  }
+}

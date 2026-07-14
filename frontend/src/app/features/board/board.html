@@ -1,0 +1,92 @@
+<div class="board-container">
+  <div class="board-header">
+    <div class="header-left">
+      <a routerLink="/projects" class="back-link">
+        <i class="bi bi-arrow-left"></i>
+        Projecten
+      </a>
+      <h1 class="project-title">{{ boardStore.projectName() || 'Laden...' }}</h1>
+    </div>
+  </div>
+
+  <div *ngIf="boardStore.errorMessage()" class="error-alert">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ boardStore.errorMessage() }}</span>
+  </div>
+
+  <!-- Kanban Board workspace -->
+  <div class="kanban-workspace" cdkDropListGroup>
+    @for (col of boardStore.columns(); track col.id) {
+      <div class="kanban-column glass-card">
+        <div class="column-header">
+          <h3>{{ col.name }}</h3>
+          <span class="task-count">{{ col.tasks.length }}</span>
+        </div>
+
+        <!-- Task List container -->
+        <div 
+          [id]="'col-' + col.id"
+          cdkDropList
+          [cdkDropListData]="col.tasks"
+          [cdkDropListConnectedTo]="connectedTo"
+          (cdkDropListDropped)="onDrop($event)"
+          class="task-list">
+          
+          @for (task of col.tasks; track task.id) {
+            <div cdkDrag class="task-card glass-card interactive-hover">
+              <div class="task-card-header">
+                <span class="task-key">FLI-{{ task.id.substring(0, 4).toUpperCase() }}</span>
+                <div class="header-right-actions">
+                  <span class="priority-indicator" [style.backgroundColor]="getPriorityColor(task.priority)"></span>
+                  <button mat-icon-button [matMenuTriggerFor]="taskMenu" class="task-card-menu-btn" (click)="$event.stopPropagation()" title="Taak acties">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <mat-menu #taskMenu="matMenu">
+                    <button mat-menu-item (click)="openTaskDetails(task.id)">
+                      <i class="bi bi-pencil-square"></i>
+                      <span>Details bekijken</span>
+                    </button>
+                    <button mat-menu-item (click)="deleteTaskDirect(task.id)">
+                      <i class="bi bi-trash" style="color: #ef4444;"></i>
+                      <span style="color: #ef4444;">Verwijderen</span>
+                    </button>
+                  </mat-menu>
+                </div>
+              </div>
+              <h4 class="task-title">{{ task.title }}</h4>
+              <p class="task-desc" *ngIf="task.description">{{ task.description }}</p>
+              
+              <div class="task-card-footer">
+                <div class="footer-left">
+                  <span class="priority-tag" [ngClass]="getPriorityClass(task.priority)">
+                    {{ getPriorityLabel(task.priority) }}
+                  </span>
+                  <span class="hours-tag" *ngIf="task.estimatedHours">
+                    <i class="bi bi-clock"></i> {{ task.estimatedHours }}u
+                  </span>
+                </div>
+                <div class="footer-right">
+                  <!-- Assignee indicator -->
+                  <div class="assignee-avatar" 
+                    [matTooltip]="task.assigneeName || 'Geen assignee'"
+                    [style.backgroundColor]="task.assigneeName ? '#3b82f6' : '#cbd5e1'">
+                    {{ (task.assigneeName ? task.assigneeName.substring(0, 2) : '??') | uppercase }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+
+        </div>
+
+        <!-- Add Task Button -->
+        <div class="column-footer">
+          <button class="add-task-btn" (click)="openCreateTaskDialog(col.id)">
+            <i class="bi bi-plus-lg"></i> Taak toevoegen
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+

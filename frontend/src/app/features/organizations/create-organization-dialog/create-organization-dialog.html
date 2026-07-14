@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>Nieuwe organisatie aanmaken</h2>
+<mat-dialog-content>
+  <form [formGroup]="orgForm" (ngSubmit)="onSubmit()" id="createOrgForm" class="dialog-form">
+    <!-- Name -->
+    <mat-form-field appearance="outline">
+      <mat-label>Organisatienaam</mat-label>
+      <input matInput formControlName="name" placeholder="Mijn Organisatie" required>
+      <mat-error *ngIf="orgForm.get('name')?.hasError('required')">
+        Naam is verplicht.
+      </mat-error>
+      <mat-error *ngIf="orgForm.get('name')?.hasError('maxlength')">
+        Naam mag maximaal 100 tekens bevatten.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline">
+      <mat-label>Omschrijving</mat-label>
+      <textarea matInput formControlName="description" placeholder="Optionele omschrijving..." rows="3"></textarea>
+      <mat-error *ngIf="orgForm.get('description')?.hasError('maxlength')">
+        Omschrijving mag maximaal 500 tekens bevatten.
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Annuleren</button>
+  <button mat-flat-button color="primary" type="submit" form="createOrgForm" [disabled]="orgForm.invalid">
+    Opslaan
+  </button>
+</mat-dialog-actions>

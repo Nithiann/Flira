@@ -1,0 +1,202 @@
+<div class="search-container">
+  
+  <div class="search-header">
+    <h1 class="page-title">Geavanceerd Zoeken</h1>
+    <p class="page-subtitle">Doorzoek alle taken over uw projecten heen met krachtige filters en direct resultaat.</p>
+  </div>
+
+  <!-- Search Filter Form Panel -->
+  <form [formGroup]="searchForm" class="filter-panel glass-card">
+    
+    <!-- Top Search Input Bar -->
+    <div class="search-input-wrapper">
+      <i class="bi bi-search search-icon-input"></i>
+      <input 
+        type="text" 
+        formControlName="searchTerm" 
+        placeholder="Zoeken op titel of beschrijving..." 
+        class="search-bar-input" />
+      <button 
+        mat-button 
+        type="button" 
+        (click)="clearFilters()" 
+        class="clear-filters-btn"
+        title="Wis alle filters">
+        <i class="bi bi-x-circle"></i> Filters wissen
+      </button>
+    </div>
+
+    <div class="filter-row">
+      <!-- Project Filter -->
+      <div class="filter-group">
+        <label for="projectSelect">Project</label>
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="projectId" id="projectSelect">
+            <mat-option value="">Alle projecten</mat-option>
+            @for (p of projects(); track p.id) {
+              <mat-option [value]="p.id">{{ p.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Assignee Filter -->
+      <div class="filter-group">
+        <label for="assigneeSelect">Assignee</label>
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="assigneeId" id="assigneeSelect">
+            <mat-option value="">Iedereen</mat-option>
+            @for (m of members(); track m.userId) {
+              <mat-option [value]="m.userId">{{ m.username }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="filter-group">
+        <label for="statusSelect">Status</label>
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="status" id="statusSelect">
+            <mat-option value="">Alle statussen</mat-option>
+            <mat-option value="Backlog">Backlog</mat-option>
+            <mat-option value="Todo">Todo</mat-option>
+            <mat-option value="In Progress">In Progress</mat-option>
+            <mat-option value="Done">Done</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Priority Filter -->
+      <div class="filter-group">
+        <label for="prioritySelect">Prioriteit</label>
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="priority" id="prioritySelect">
+            <mat-option value="">Alle prioriteiten</mat-option>
+            <mat-option value="0">Laag</mat-option>
+            <mat-option value="1">Medium</mat-option>
+            <mat-option value="2">Hoog</mat-option>
+            <mat-option value="3">Critical</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Sorting Options -->
+    <div class="sorting-row">
+      <div class="sorting-group">
+        <label for="sortBySelect">Sorteer op</label>
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="sortBy" id="sortBySelect">
+            <mat-option value="Title">Titel</mat-option>
+            <mat-option value="DueDate">Vervaldatum</mat-option>
+            <mat-option value="Priority">Prioriteit</mat-option>
+            <mat-option value="CreatedAt">Aangemaakt op</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="sorting-group">
+        <label for="sortOrderSelect">Volgorde</label>
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="sortOrder" id="sortOrderSelect">
+            <mat-option value="asc">Oplopend</mat-option>
+            <mat-option value="desc">Aflopend</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- Search Results Area -->
+  <div class="results-panel glass-card">
+    <div class="results-header">
+      <span class="results-count">{{ totalCount() }} {{ totalCount() === 1 ? 'taak' : 'taken' }} gevonden</span>
+    </div>
+
+    @if (tasks().length > 0) {
+      <div class="table-responsive">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Sleutel</th>
+              <th>Titel</th>
+              <th>Status</th>
+              <th>Prioriteit</th>
+              <th>Assignee</th>
+              <th>Vervaldatum</th>
+              <th>Aangemaakt</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (task of tasks(); track task.id) {
+              <tr class="result-row interactive-hover" (click)="openTaskDetails(task.id)">
+                <td>
+                  <span class="task-key-tag">FLI-{{ task.id.substring(0,4).toUpperCase() }}</span>
+                </td>
+                <td class="task-title-cell">
+                  <span class="task-title-text">{{ task.title }}</span>
+                  <span class="task-desc-sub" *ngIf="task.description">{{ task.description | slice:0:80 }}{{ task.description.length > 80 ? '...' : '' }}</span>
+                </td>
+                <td>
+                  <span class="status-pill">{{ task.status }}</span>
+                </td>
+                <td>
+                  <span class="priority-badge" [ngClass]="getPriorityClass(task.priority)">
+                    {{ getPriorityLabel(task.priority) }}
+                  </span>
+                </td>
+                <td>
+                  <div class="assignee-cell">
+                    <span class="avatar-sm">{{ getMemberName(task.assigneeId).substring(0, 2) | uppercase }}</span>
+                    <span>{{ getMemberName(task.assigneeId) }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="due-date-cell" [class.overdue]="isOverdue(task.dueDate)">
+                    {{ task.dueDate ? (task.dueDate | date:'mediumDate') : '—' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="date-cell">{{ task.createdAt | date:'shortDate' }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Bar -->
+      <div class="pagination-bar">
+        <div class="page-size-selector">
+          <label for="pageSizeSelect">Items per pagina:</label>
+          <select id="pageSizeSelect" #sizeSelect (change)="onPageSizeChange(sizeSelect.value)">
+            <option [value]="10" [selected]="pageSize() === 10">10</option>
+            <option [value]="20" [selected]="pageSize() === 20">20</option>
+            <option [value]="50" [selected]="pageSize() === 50">50</option>
+          </select>
+        </div>
+
+        <div class="page-controls">
+          <button mat-icon-button (click)="prevPage()" [disabled]="pageNumber() === 1" title="Vorige pagina">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="page-info">Pagina {{ pageNumber() }} van {{ totalPages() }}</span>
+          <button mat-icon-button (click)="nextPage()" [disabled]="pageNumber() === totalPages()" title="Volgende pagina">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+    } @else {
+      <div class="empty-search-state">
+        <i class="bi bi-search-heart"></i>
+        <h3>Geen resultaten gevonden</h3>
+        <p>Probeer uw zoekterm aan te passen of filters te wissen om meer taken te zien.</p>
+        <button mat-flat-button color="primary" (click)="clearFilters()">Wis alle filters</button>
+      </div>
+    }
+  </div>
+
+</div>
