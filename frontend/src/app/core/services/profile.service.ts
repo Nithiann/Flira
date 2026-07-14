@@ -35,4 +35,8 @@ export class ProfileService {
   getProfile(): Observable<UserProfile> {
     return this.http.get<UserProfile>(`${this.API_URL}/profile`);
   }
+
+  searchUsers(searchTerm: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/search?searchTerm=${searchTerm}`);
+  }
 }

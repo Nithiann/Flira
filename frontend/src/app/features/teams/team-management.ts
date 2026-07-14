@@ -2,6 +2,7 @@ import { Component, inject, signal, effect } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TeamService } from '../../core/services/team.service';
 import { OrganizationService } from '../../core/services/organization.service';
+import { ProfileService } from '../../core/services/profile.service';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,6 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-team-management',
@@ -23,7 +26,8 @@ import { MatDividerModule } from '@angular/material/divider';
     MatIconModule,
     MatSelectModule,
     MatListModule,
-    MatDividerModule
+    MatDividerModule,
+    MatAutocompleteModule
   ],
   templateUrl: './team-management.html',
   styleUrl: './team-management.scss'
@@ -32,10 +36,12 @@ export class TeamManagementComponent {
   private readonly fb = inject(FormBuilder);
   private readonly teamService = inject(TeamService);
   protected readonly orgService = inject(OrganizationService);
+  private readonly profileService = inject(ProfileService);
 
   teams = signal<any[]>([]);
   selectedTeam = signal<any | null>(null);
   members = signal<any[]>([]);
+  filteredUsers = signal<any[]>([]);
   
   createTeamForm: FormGroup;
   inviteForm: FormGroup;
@@ -65,6 +71,22 @@ export class TeamManagementComponent {
         this.selectedTeam.set(null);
         this.members.set([]);
       }
+    });
+
+    // Reactive user search autocomplete
+    this.inviteForm.get('email')?.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(value => {
+        const val = typeof value === 'string' ? value : '';
+        if (!val || val.length < 2) {
+          return of([]);
+        }
+        return this.profileService.searchUsers(val);
+      })
+    ).subscribe({
+      next: (users) => this.filteredUsers.set(users),
+      error: () => this.filteredUsers.set([])
     });
   }
 
@@ -105,6 +127,13 @@ export class TeamManagementComponent {
     const team = this.selectedTeam();
     if (this.inviteForm.invalid || !team) return;
 
+    const email = this.inviteForm.get('email')?.value;
+    const userExists = this.filteredUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
+    if (!userExists) {
+      this.errorMessage.set('Gebruiker bestaat niet en kan niet worden toegevoegd.');
+      return;
+    }
+
     this.isLoading.set(true);
     this.successMessage.set(null);
     this.errorMessage.set(null);
@@ -115,13 +144,13 @@ export class TeamManagementComponent {
         this.isLoading.set(false);
         this.inviteForm.reset({ email: '', role: 'User' });
         this.showInviteForm.set(false);
-        this.successMessage.set('Uitnodiging succesvol verzonden!');
+        this.successMessage.set('Lid succesvol toegevoegd aan het team!');
         // Refresh members
         this.selectTeam(team);
       },
       error: (err) => {
         this.isLoading.set(false);
-        const msg = err.error?.Message || 'Fout bij het uitnodigen van lid.';
+        const msg = err.error?.Message || 'Fout bij het toevoegen van lid.';
         this.errorMessage.set(msg);
       }
     });

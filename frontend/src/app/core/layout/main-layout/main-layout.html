@@ -79,6 +79,12 @@
         </span>
         <i style="font-size: 1.25rem; width: 1.25rem; height: 1.25rem;" class="bi bi-chevron-down"></i>
       </button>
+
+      @if (orgService.activeOrganization() && (orgService.currentUserRole() === 'Owner' || orgService.currentUserRole() === 'Admin')) {
+        <a mat-icon-button routerLink="/organizations/manage" title="Organisatie beheren" style="margin-left: 0.5rem; color: var(--text-color); opacity: 0.8; line-height: 1;">
+          <i class="bi bi-gear-fill" style="font-size: 1.2rem;"></i>
+        </a>
+      }
       <mat-menu #orgMenu="matMenu">
         @for (org of orgService.organizations(); track org.id) {
           <button mat-menu-item (click)="orgService.setActiveOrganization(org)">
