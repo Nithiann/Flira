@@ -1,0 +1,187 @@
+<div class="org-manage-container">
+  
+  <!-- Header with back button -->
+  <div class="org-manage-header">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <a routerLink="/dashboard" class="back-link-btn" title="Terug naar Dashboard">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div>
+        <h1 class="page-title">Organisatiebeheer</h1>
+        <p class="page-subtitle">Beheer de algemene gegevens en leden van de geselecteerde organisatie.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="org-manage-body">
+    
+    <!-- Success/Error Alerts -->
+    @if (errorMessage()) {
+      <div class="alert-box error-alert">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+    @if (successMessage()) {
+      <div class="alert-box success-alert">
+        <i class="bi bi-check-circle"></i>
+        <span>{{ successMessage() }}</span>
+      </div>
+    }
+
+    <div class="org-grid-layout">
+      
+      <!-- Panel 1: Organization Settings Details -->
+      <div class="manage-panel glass-card">
+        <div class="panel-header">
+          <i class="bi bi-gear-wide-connected panel-icon"></i>
+          <div>
+            <h3>Organisatiegegevens</h3>
+            <p>Pas de naam en omschrijving van de organisatie aan.</p>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="org-fields">
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-label>Organisatienaam</mat-label>
+              <input matInput [(ngModel)]="orgName" [disabled]="!isOwner() || isSaving()" placeholder="Bijv. Mijn Bedrijf B.V." />
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-label>Omschrijving</mat-label>
+              <textarea matInput [(ngModel)]="orgDescription" [disabled]="!isOwner() || isSaving()" rows="3" placeholder="Beschrijf de organisatie..."></textarea>
+            </mat-form-field>
+          </div>
+
+          @if (isOwner()) {
+            <div class="org-actions">
+              <button mat-flat-button color="primary" (click)="saveOrgDetails()" [disabled]="isSaving() || !orgName().trim()">
+                <i class="bi bi-save"></i> Wijzigingen opslaan
+              </button>
+              <button mat-flat-button color="warn" (click)="deleteOrg()" [disabled]="isSaving()">
+                <i class="bi bi-trash"></i> Organisatie Verwijderen
+              </button>
+            </div>
+          } @else {
+            <div class="read-only-banner">
+              <i class="bi bi-info-circle"></i>
+              <span>Alleen de organisatie-eigenaar kan deze instellingen aanpassen.</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Panel 2: Members Management List -->
+      <div class="manage-panel glass-card">
+        <div class="panel-header" style="justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <i class="bi bi-people panel-icon"></i>
+            <div>
+              <h3>Ledenbeheer ({{ orgMembers().length }})</h3>
+              <p>Beheer en nodig leden uit voor de organisatie.</p>
+            </div>
+          </div>
+          
+          @if (isOwner() || isAdmin()) {
+            <button mat-flat-button color="primary" (click)="showAddMember.set(!showAddMember())">
+              <i class="bi" [class.bi-person-plus-fill]="!showAddMember()" [class.bi-x-lg]="showAddMember()"></i> 
+              {{ showAddMember() ? 'Annuleren' : 'Lid toevoegen' }}
+            </button>
+          }
+        </div>
+
+        <div class="panel-body">
+          
+          <!-- Add Member Autocomplete Form -->
+          @if (showAddMember() && (isOwner() || isAdmin())) {
+            <div class="add-member-form glass-card">
+              <h4>Nieuw lid toevoegen</h4>
+              <p class="form-desc">Zoek op naam of mailadres van bestaande gebruikers in het systeem.</p>
+              
+              <div class="add-member-fields">
+                <mat-form-field appearance="outline" style="flex: 2; min-width: 200px;">
+                  <mat-label>Zoeken op naam of e-mailadres</mat-label>
+                  <input matInput 
+                         type="text" 
+                         placeholder="Typ om te zoeken..."
+                         [formControl]="searchControl" 
+                         [matAutocomplete]="auto" />
+                  <mat-autocomplete #auto="matAutocomplete">
+                    @for (user of filteredUsers(); track user.id) {
+                      <mat-option [value]="user.email">
+                        {{ user.userName }} ({{ user.email }})
+                      </mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline" style="flex: 1; min-width: 120px;">
+                  <mat-label>Rol in Organisatie</mat-label>
+                  <mat-select [(ngModel)]="newMemberRole">
+                    <mat-option value="Admin">Admin</mat-option>
+                    <mat-option value="Member">Member</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <button mat-flat-button color="primary" (click)="addOrgMember()" [disabled]="isSaving() || !searchControl.value?.trim()" style="height: 56px; margin-bottom: 22px;">
+                  Toevoegen
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Grid of Members -->
+          <div class="members-grid-container">
+            @for (member of orgMembers(); track member.userId) {
+              <div class="member-row glass-card">
+                <div class="member-identity">
+                  <i class="bi bi-person-circle member-avatar"></i>
+                  <div class="member-text">
+                    <span class="member-name">{{ member.username }}</span>
+                    <span class="member-email">{{ member.email }}</span>
+                  </div>
+                </div>
+
+                <div class="member-controls">
+                  <!-- Role selection dropdown -->
+                  <mat-form-field appearance="outline" class="role-select">
+                    <mat-label>Rol</mat-label>
+                    <mat-select 
+                      [value]="member.role" 
+                      [disabled]="!isOwner() || member.role === 'Owner' || member.userId === currentUserId() || isSaving()"
+                      (selectionChange)="onMemberRoleChange(member.userId, $event.value)">
+                      <mat-option value="Owner" [disabled]="true">Owner</mat-option>
+                      <mat-option value="Admin">Admin</mat-option>
+                      <mat-option value="Member">Member</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <!-- Remove Member Button -->
+                  @if ((isOwner() || isAdmin()) && member.role !== 'Owner' && member.userId !== currentUserId()) {
+                    <button 
+                      mat-icon-button 
+                      color="warn" 
+                      (click)="removeOrgMember(member.userId)" 
+                      [disabled]="isSaving()"
+                      title="Verwijder lid uit organisatie">
+                      <i class="bi bi-person-x"></i>
+                    </button>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-members-state">
+                <i class="bi bi-people"></i>
+                <p>Geen leden gevonden voor deze organisatie.</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

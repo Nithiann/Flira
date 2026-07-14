@@ -21,10 +21,8 @@ public class GetOrganizationsQueryHandler : IRequestHandler<GetOrganizationsQuer
     public async Task<Result<List<OrganizationDto>>> Handle(GetOrganizationsQuery request, CancellationToken cancellationToken)
     {
         var orgs = await _context.OrganizationUsers
-            .Where(ou => ou.UserId == request.UserId)
-            .Select(ou => ou.Organization)
-            .Where(o => o != null)
-            .Select(o => new OrganizationDto(o!.Id, o.Name, o.Description))
+            .Where(ou => ou.UserId == request.UserId && ou.Organization != null)
+            .Select(ou => new OrganizationDto(ou.OrganizationId, ou.Organization!.Name, ou.Organization.Description, ou.Role))
             .ToListAsync(cancellationToken);
 
         return Result.Success(orgs);

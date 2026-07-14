@@ -77,8 +77,15 @@
           <h3>Nieuw lid uitnodigen</h3>
           <div class="invite-form-fields">
             <mat-form-field appearance="outline">
-              <mat-label>E-mailadres</mat-label>
-              <input matInput type="email" formControlName="email" placeholder="collega@organisatie.nl" required>
+              <mat-label>Zoeken op naam of e-mailadres</mat-label>
+              <input matInput type="text" formControlName="email" placeholder="Typ om te zoeken..." [matAutocomplete]="auto" required>
+              <mat-autocomplete #auto="matAutocomplete">
+                @for (user of filteredUsers(); track user.id) {
+                  <mat-option [value]="user.email">
+                    {{ user.userName }} ({{ user.email }})
+                  </mat-option>
+                }
+              </mat-autocomplete>
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Rol</mat-label>

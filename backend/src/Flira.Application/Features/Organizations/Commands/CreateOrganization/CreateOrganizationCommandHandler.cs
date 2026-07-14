@@ -33,7 +33,7 @@ public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizati
         {
             OrganizationId = organization.Id,
             UserId = request.CreatorUserId,
-            Role = "Admin"
+            Role = "Owner"
         };
 
         _context.OrganizationUsers.Add(organizationUser);

@@ -15,17 +15,20 @@ public class PermissionService : IPermissionService
     private static readonly Dictionary<string, HashSet<string>> RolePermissions = new()
     {
         {
-            "Admin", new HashSet<string>
+            "Owner", new HashSet<string>
             {
+                Permissions.OrganizationManage, Permissions.OrganizationUpdate, Permissions.OrganizationDelete,
+                Permissions.OrganizationMembersRead, Permissions.OrganizationMembersManage, Permissions.OrganizationMemberRolesManage,
                 Permissions.ProjectCreate, Permissions.ProjectRead, Permissions.ProjectUpdate, Permissions.ProjectDelete,
                 Permissions.TaskCreate, Permissions.TaskRead, Permissions.TaskUpdate, Permissions.TaskDelete,
-                Permissions.TeamManage, Permissions.OrganizationManage
+                Permissions.TeamManage
             }
         },
         {
-            "Manager", new HashSet<string>
+            "Admin", new HashSet<string>
             {
-                Permissions.ProjectCreate, Permissions.ProjectRead, Permissions.ProjectUpdate,
+                Permissions.OrganizationMembersRead, Permissions.OrganizationMembersManage,
+                Permissions.ProjectCreate, Permissions.ProjectRead, Permissions.ProjectUpdate, Permissions.ProjectDelete,
                 Permissions.TaskCreate, Permissions.TaskRead, Permissions.TaskUpdate, Permissions.TaskDelete,
                 Permissions.TeamManage
             }
@@ -33,14 +36,9 @@ public class PermissionService : IPermissionService
         {
             "Member", new HashSet<string>
             {
-                Permissions.ProjectRead,
-                Permissions.TaskCreate, Permissions.TaskRead, Permissions.TaskUpdate
-            }
-        },
-        {
-            "Guest", new HashSet<string>
-            {
-                Permissions.ProjectRead, Permissions.TaskRead
+                Permissions.OrganizationMembersRead,
+                Permissions.ProjectCreate, Permissions.ProjectRead, Permissions.ProjectUpdate, Permissions.ProjectDelete,
+                Permissions.TaskCreate, Permissions.TaskRead, Permissions.TaskUpdate, Permissions.TaskDelete
             }
         }
     };

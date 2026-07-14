@@ -14,4 +14,9 @@ public static class Permissions
 
     public const string TeamManage = "Team.Manage";
     public const string OrganizationManage = "Organization.Manage";
+    public const string OrganizationUpdate = "Organization.Update";
+    public const string OrganizationDelete = "Organization.Delete";
+    public const string OrganizationMembersRead = "Organization.MembersRead";
+    public const string OrganizationMembersManage = "Organization.MembersManage";
+    public const string OrganizationMemberRolesManage = "Organization.MemberRolesManage";
 }

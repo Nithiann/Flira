@@ -12,6 +12,7 @@ export class OrganizationService {
 
   readonly organizations = signal<any[]>([]);
   readonly activeOrganization = signal<any | null>(null);
+  readonly currentUserRole = signal<string | null>(null);
 
   constructor() {
     // Automatically load organizations when service is created
@@ -28,6 +29,7 @@ export class OrganizationService {
           this.setActiveOrganization(active);
         } else {
           this.activeOrganization.set(null);
+          this.currentUserRole.set(null);
         }
       })
     );
@@ -36,9 +38,11 @@ export class OrganizationService {
   setActiveOrganization(org: any): void {
     if (org) {
       this.activeOrganization.set(org);
+      this.currentUserRole.set(org.role || 'Member');
       localStorage.setItem(this.ACTIVE_ORG_KEY, org.id);
     } else {
       this.activeOrganization.set(null);
+      this.currentUserRole.set(null);
       localStorage.removeItem(this.ACTIVE_ORG_KEY);
     }
   }
@@ -47,5 +51,39 @@ export class OrganizationService {
     return this.http.post<any>(this.API_URL, orgData).pipe(
       tap(() => this.loadOrganizations().subscribe())
     );
+  }
+
+  updateOrganization(id: string, orgData: { name: string; description?: string }): Observable<any> {
+    return this.http.put<any>(`${this.API_URL}/${id}`, orgData).pipe(
+      tap(() => {
+        // Reload organizations list to refresh name/description
+        this.loadOrganizations().subscribe();
+      })
+    );
+  }
+
+  deleteOrganization(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.API_URL}/${id}`).pipe(
+      tap(() => {
+        localStorage.removeItem(this.ACTIVE_ORG_KEY);
+        this.loadOrganizations().subscribe();
+      })
+    );
+  }
+
+  getOrganizationMembers(id: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/${id}/members`);
+  }
+
+  addOrganizationMember(id: string, email: string, role: string): Observable<any> {
+    return this.http.post<any>(`${this.API_URL}/${id}/members`, { email, role });
+  }
+
+  removeOrganizationMember(id: string, userId: string): Observable<any> {
+    return this.http.delete<any>(`${this.API_URL}/${id}/members/${userId}`);
+  }
+
+  updateOrganizationMemberRole(id: string, userId: string, role: string): Observable<any> {
+    return this.http.put<any>(`${this.API_URL}/${id}/members/${userId}/role`, { role });
   }
 }

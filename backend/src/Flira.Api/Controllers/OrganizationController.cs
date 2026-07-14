@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 using Flira.Api.Security;
 using Flira.Application.Features.Organizations.Commands.AddUserToOrganization;
 using Flira.Application.Features.Organizations.Commands.CreateOrganization;
+using Flira.Application.Features.Organizations.Commands.UpdateOrganization;
+using Flira.Application.Features.Organizations.Commands.DeleteOrganization;
+using Flira.Application.Features.Organizations.Commands.RemoveUserFromOrganization;
+using Flira.Application.Features.Organizations.Commands.UpdateUserOrganizationRole;
 using Flira.Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -65,8 +69,38 @@ public class OrganizationController : ControllerBase
         return Ok(new { OrganizationId = result.Value });
     }
 
+    [HttpPut("{id}")]
+    [HasPermission(Permissions.OrganizationUpdate)]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateOrganizationModel model)
+    {
+        var command = new UpdateOrganizationCommand(id, model.Name, model.Description);
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new { ErrorCode = result.Error.Code, Message = result.Error.Message });
+        }
+
+        return Ok(new { Message = "Organisatie succesvol bijgewerkt." });
+    }
+
+    [HttpDelete("{id}")]
+    [HasPermission(Permissions.OrganizationDelete)]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var command = new DeleteOrganizationCommand(id);
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new { ErrorCode = result.Error.Code, Message = result.Error.Message });
+        }
+
+        return Ok(new { Message = "Organisatie succesvol verwijderd." });
+    }
+
     [HttpPost("{id}/members")]
-    [HasPermission(Permissions.OrganizationManage)]
+    [HasPermission(Permissions.OrganizationMembersManage)]
     public async Task<IActionResult> AddMember(Guid id, [FromBody] AddMemberModel model)
     {
         var command = new AddUserToOrganizationCommand(id, model.Email, model.Role);
@@ -80,7 +114,38 @@ public class OrganizationController : ControllerBase
         return Ok(new { Message = "Lid succesvol toegevoegd aan de organisatie." });
     }
 
+    [HttpDelete("{id}/members/{userId}")]
+    [HasPermission(Permissions.OrganizationMembersManage)]
+    public async Task<IActionResult> RemoveMember(Guid id, string userId)
+    {
+        var command = new RemoveUserFromOrganizationCommand(id, userId);
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new { ErrorCode = result.Error.Code, Message = result.Error.Message });
+        }
+
+        return Ok(new { Message = "Lid succesvol verwijderd uit de organisatie." });
+    }
+
+    [HttpPut("{id}/members/{userId}/role")]
+    [HasPermission(Permissions.OrganizationMemberRolesManage)]
+    public async Task<IActionResult> UpdateMemberRole(Guid id, string userId, [FromBody] UpdateMemberRoleModel model)
+    {
+        var command = new UpdateUserOrganizationRoleCommand(id, userId, model.Role);
+        var result = await _mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new { ErrorCode = result.Error.Code, Message = result.Error.Message });
+        }
+
+        return Ok(new { Message = "Rol van lid succesvol bijgewerkt." });
+    }
+
     [HttpGet("{id}/members")]
+    [HasPermission(Permissions.OrganizationMembersRead)]
     public async Task<IActionResult> GetMembers(Guid id)
     {
         var query = new Flira.Application.Features.Organizations.Queries.GetOrganizationMembers.GetOrganizationMembersQuery(id);
@@ -96,4 +161,6 @@ public class OrganizationController : ControllerBase
 }
 
 public record CreateOrganizationModel(string Name, string Description);
+public record UpdateOrganizationModel(string Name, string Description);
 public record AddMemberModel(string Email, string Role);
+public record UpdateMemberRoleModel(string Role);

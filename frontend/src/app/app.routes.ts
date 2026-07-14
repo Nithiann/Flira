@@ -64,6 +64,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/settings/settings').then(m => m.SettingsComponent)
       },
       {
+        path: 'organizations/manage',
+        loadComponent: () => import('./features/organizations/organization-management/organization-management').then(m => m.OrganizationManagementComponent)
+      },
+      {
         path: 'profile',
         loadComponent: () => import('./features/profile/profile').then(m => m.ProfileComponent)
       }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, effect } from '@angular/core';
+import { Component, OnInit, inject, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectService } from '../../core/services/project.service';
@@ -6,12 +6,14 @@ import { OrganizationService } from '../../core/services/organization.service';
 import { BoardService } from '../../core/services/board.service';
 import { ColumnService } from '../../core/services/column.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { AuthService } from '../../core/services/auth.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-settings',
@@ -24,7 +26,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatDividerModule
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss'
@@ -35,6 +38,7 @@ export class SettingsComponent implements OnInit {
   private readonly boardService = inject(BoardService);
   private readonly columnService = inject(ColumnService);
   private readonly themeService = inject(ThemeService);
+  private readonly authService = inject(AuthService);
 
   isDarkMode = this.themeService.isDarkMode;
   selectedAccent = this.themeService.accentType;
