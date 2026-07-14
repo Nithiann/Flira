@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Flira.Application.Interfaces;
+using Flira.Application.Security;
 using Flira.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -52,6 +53,20 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
             var mockCurrentUserService = new Mock<ICurrentUserService>();
             mockCurrentUserService.Setup(m => m.UserId).Returns(() => CurrentUserId);
             services.AddScoped<ICurrentUserService>(_ => mockCurrentUserService.Object);
+
+            // Replace IPermissionService with Mock to allow bypassing security policies in integration tests
+            var permissionServiceDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(IPermissionService));
+
+            if (permissionServiceDescriptor != null)
+            {
+                services.Remove(permissionServiceDescriptor);
+            }
+
+            var mockPermissionService = new Mock<IPermissionService>();
+            mockPermissionService.Setup(m => m.HasPermissionAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+            services.AddScoped<IPermissionService>(_ => mockPermissionService.Object);
         });
     }
 
